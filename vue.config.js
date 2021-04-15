@@ -1,3 +1,5 @@
+const registerRouter = require('./node-back')
+
 module.exports = {
   css: {
     loaderOptions: {
@@ -8,6 +10,11 @@ module.exports = {
           @import "@/assets/scss/mixin.scss";
         `
       }
+    }
+  },
+  devServer: {
+    before(app) {
+      registerRouter(app)
     }
   },
   productionSourceMap: false,
