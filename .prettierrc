@@ -14,5 +14,6 @@
         "parser": "json"
       }
     }
-  ]
+  ],
+  "bracketSpacing": true 
 }
