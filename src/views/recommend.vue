@@ -17,7 +17,7 @@
               @click="selectItem(item)"
             >
               <div class="icon">
-                <img width="60" height="60" :src="item.pic" class="icon-img"/>
+                <img width="60" height="60" v-lazy="item.pic" class="icon-img"/>
               </div>
               <div class="text">
                 <h2 class="name">
