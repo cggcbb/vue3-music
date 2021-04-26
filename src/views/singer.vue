@@ -5,10 +5,19 @@
 </template>
 
 <script>
+import { getSinger } from '@/service/singer'
 export default {
-  name: 'singer'
+  name: 'singer',
+  data() {
+    return {
+      singers: []
+    }
+  },
+  async created() {
+    const result = await getSinger()
+    console.log(result)
+  }
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
