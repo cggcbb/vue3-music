@@ -5,7 +5,7 @@
   "semi": false,
   "printWidth": 100,
   "tabWidth": 2,
-  "proseWrap": "perserve",
+  "proseWrap": "preserve",
   "arrowParens": "avoid",
   "overrides": [
     {

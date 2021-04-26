@@ -1,11 +1,6 @@
 <template>
   <div class="loading-wrapper">
-    <svg
-      :width="width"
-      :height="height"
-      viewBox="0 0 50 50"
-      preserveAspectRatio="xMidYMid meet"
-    >
+    <svg :width="width" :height="height" viewBox="0 0 50 50" preserveAspectRatio="xMidYMid meet">
       <circle
         cx="25"
         cy="25"
@@ -56,13 +51,13 @@
       </circle>
     </svg>
     <div class="loading-content">
-      <slot></slot>
+      {{ loadingMessage }}
     </div>
   </div>
 </template>
 
 <script>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 export default {
   name: 'loading',
@@ -137,11 +132,20 @@ export default {
       )
     }
 
+    const loadingMessage = ref('Loading ...')
+
+    // 对loading directive提供的内部方法, 来动态修改loadingMessage的值
+    const setMessage = message => {
+      loadingMessage.value = message
+    }
+
     return {
       outSideTransformColor,
       inSideTransformColor,
       outSideStrokeDasharray,
-      inSideStrokeDasharray
+      inSideStrokeDasharray,
+      loadingMessage,
+      setMessage
     }
   }
 }

@@ -33,22 +33,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.scrollbar {
-  height: 100% !important;
-  .scrollbar-wrapper {
-    position: relative !important;
-    height: 100% !important;
-    padding: 0 10px !important;
-    border: 1px solid #ccc !important;
-    overflow: hidden !important;
-  }
-  .scrollbar-content-item {
-    padding: 10px 0 !important;
-    list-style: none !important;
-    border-bottom: 1px solid #ccc !important;
-    text-align: left !important;
-  }
-}
-
-</style>
+<style lang="scss" scoped></style>
