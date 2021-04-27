@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { getSinger } from '@/service/singer'
+import { getSingerList } from '@/service/singer'
 export default {
   name: 'singer',
   data() {
@@ -14,7 +14,7 @@ export default {
     }
   },
   async created() {
-    const result = await getSinger()
+    const result = await getSingerList()
     console.log(result)
   }
 }
