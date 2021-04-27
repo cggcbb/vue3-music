@@ -1,8 +1,15 @@
 <template>
-  <scroll class="singer-list">
-    <ul>
-      <li v-for="group in data" :key="group.title" class="group">
-        <h2 class="title">{{ group.title }}</h2>
+  <scroll class="singer-list" :probeType="3" @scroll="onScroll">
+    <ul ref="groupRef">
+      <li v-for="(group, groupIndex) in data" :key="group.title" class="group">
+        <h2
+          class="title"
+          :style="{
+            color: titleStyle(groupIndex)
+          }"
+        >
+          {{ group.title }}
+        </h2>
         <ul>
           <li v-for="item in group.list" :key="item.id" class="item">
             <img class="avatar" v-lazy="item.pic" />
@@ -11,11 +18,16 @@
         </ul>
       </li>
     </ul>
+    <div class="fixed" v-show="fixedTitle" :style="fixedStyle">
+      <div class="fixed-title">{{ fixedTitle }}</div>
+    </div>
   </scroll>
 </template>
 
 <script>
 import Scroll from '@/components/base/scroll/scroll'
+import useFixedTitle from './use-fixed-title'
+
 export default {
   name: 'singer-list',
   components: { Scroll },
@@ -23,6 +35,17 @@ export default {
     data: {
       type: Array,
       default: () => []
+    }
+  },
+  setup(props, { emit }) {
+    const { groupRef, onScroll, fixedTitle, fixedStyle, titleStyle } = useFixedTitle(props)
+
+    return {
+      onScroll,
+      groupRef,
+      fixedTitle,
+      fixedStyle,
+      titleStyle
     }
   }
 }
@@ -42,7 +65,6 @@ export default {
       line-height: 30px;
       padding-left: 20px;
       font-size: $font-size-small;
-      color: $color-text-l;
       background: $color-highlight-background;
     }
     .item {
@@ -71,7 +93,6 @@ export default {
       line-height: 30px;
       padding-left: 20px;
       font-size: $font-size-small;
-      color: $color-text-l;
       background: $color-highlight-background;
     }
   }
