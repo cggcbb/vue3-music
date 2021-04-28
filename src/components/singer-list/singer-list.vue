@@ -1,5 +1,5 @@
 <template>
-  <scroll class="singer-list" :probeType="3" @scroll="onScroll">
+  <scroll class="singer-list" :probeType="3" @scroll="onScroll" ref="scrollRef">
     <ul ref="groupRef">
       <li v-for="(group, groupIndex) in data" :key="group.title" class="group">
         <h2
@@ -21,12 +21,30 @@
     <div class="fixed" v-show="fixedTitle" :style="fixedStyle">
       <div class="fixed-title">{{ fixedTitle }}</div>
     </div>
+    <div
+      class="shortcut"
+      @touchstart.stop.prevent="onShortcutTouchStart"
+      @touchmove.stop.prevent="onShortcutTouchMove"
+    >
+      <ul>
+        <li
+          v-for="(item, index) in shortcutList"
+          :key="item"
+          :data-index="index"
+          class="item"
+          :class="{ current: currentIndex === index }"
+        >
+          {{ item }}
+        </li>
+      </ul>
+    </div>
   </scroll>
 </template>
 
 <script>
 import Scroll from '@/components/base/scroll/scroll'
 import useFixedTitle from './use-fixed-title'
+import useShortCut from './use-short-cut'
 
 export default {
   name: 'singer-list',
@@ -38,20 +56,42 @@ export default {
     }
   },
   setup(props, { emit }) {
-    const { groupRef, onScroll, fixedTitle, fixedStyle, titleStyle } = useFixedTitle(props)
+    const {
+      groupRef,
+      onScroll,
+      fixedTitle,
+      fixedStyle,
+      titleStyle,
+      currentIndex,
+      colors
+    } = useFixedTitle(props)
+
+    const { shortcutList, onShortcutTouchStart, onShortcutTouchMove, scrollRef } = useShortCut({
+      props,
+      currentIndex,
+      colors,
+      groupRef
+    })
 
     return {
       onScroll,
       groupRef,
       fixedTitle,
       fixedStyle,
-      titleStyle
+      titleStyle,
+      currentIndex,
+      shortcutList,
+      onShortcutTouchStart,
+      onShortcutTouchMove,
+      scrollRef
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+$shortcutColor: var(--shortcutColor, #ffcd32);
+
 .singer-list {
   position: relative;
   width: 100%;
@@ -94,6 +134,27 @@ export default {
       padding-left: 20px;
       font-size: $font-size-small;
       background: $color-highlight-background;
+    }
+  }
+  .shortcut {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    padding: 20px 0;
+    border-radius: 10px;
+    text-align: center;
+    background: $color-background-d;
+    font-family: Helvetica;
+    .item {
+      padding: 3px;
+      line-height: 1;
+      color: $color-text-l;
+      font-size: $font-size-small;
+      &.current {
+        color: $shortcutColor;
+      }
     }
   }
 }

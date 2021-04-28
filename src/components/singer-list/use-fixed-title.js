@@ -8,14 +8,14 @@ export default function useFixedTitle(props) {
   const scrollY = ref(0)
   const currentIndex = ref(0)
   const distance = ref(0)
-  let colors = ['#ffcd32']
+  const colors = ref(['#ffcd32'])
 
   const stop = watch(
     () => props.data,
     () => {
       nextTick(() => {
         calculateHeightsList()
-        colors = colors.concat(getRandomColorsList(props.data.length))
+        colors.value = colors.value.concat(getRandomColorsList(props.data.length))
         stop()
       })
     }
@@ -47,13 +47,12 @@ export default function useFixedTitle(props) {
       distanceVal > 0 && distanceVal <= FIXED_TITLE_HEIGHT ? distanceVal - FIXED_TITLE_HEIGHT : 0
     return {
       transform: `translate3d(0, ${diff}px, 0)`,
-      color: colors[currentIndex.value],
-      transition: 'transform .1s'
+      color: colors.value[currentIndex.value]
     }
   })
 
   const titleStyle = index => {
-    return colors[index]
+    return colors.value[index]
   }
 
   // 计算每个区间的height
@@ -80,6 +79,8 @@ export default function useFixedTitle(props) {
     fixedTitle,
     fixedStyle,
     onScroll,
-    titleStyle
+    titleStyle,
+    currentIndex,
+    colors
   }
 }
