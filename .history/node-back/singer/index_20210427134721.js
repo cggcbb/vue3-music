@@ -1,23 +1,25 @@
-//* 获取签名方法
+// 获取签名方法
 const getSecuritySign = require('../sign')
+// 请求相关函数
 const { get } = require('../request')
+// utils
 const { getRandomVal } = require('../utils')
-
-//* 响应成功code
-const { CODE_OK } = require('./common')
 
 const pinyin = require('pinyin')
 
+// 响应成功code
+const CODE_OK = 0
+
 const HOT_NAME = '热'
-//* 默认前15名为热门歌手
+// 默认前10名为热门歌手
 const HOT_NUM = 15
 
-//* 第三方服务接口 url
+// 第三方服务接口 url
 const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'
 
-//& 获取分页请求参数
+// 获取分页请求参数
 function getSingerRequestParams(page) {
-  //* 构造请求 data 参数
+  // 构造请求 data 参数
   const data = JSON.stringify({
     comm: { ct: 24, cv: 0 },
     singerList: {
@@ -34,9 +36,9 @@ function getSingerRequestParams(page) {
     }
   })
 
-  //* 随机数值
+  // 随机数值
   const randomVal = getRandomVal('getUCGI')
-  //* 计算签名值
+  // 计算签名值
   const sign = getSecuritySign(data)
 
   return {
@@ -46,7 +48,7 @@ function getSingerRequestParams(page) {
   }
 }
 
-//& 分页获取歌手数据 ( 返回promise, 供Promise.all使用 )
+// 分页获取歌手数据 ( 返回promise, 供Promise.all使用 )
 function getSingerListPage(page) {
   return new Promise((resolve, reject) => {
     const { randomVal, data, sign } = getSingerRequestParams(page)
@@ -66,15 +68,15 @@ function getSingerListPage(page) {
   })
 }
 
-//& 注册歌手数据接口路由
+// 注册歌手数据接口路由
 function registerSinger(app) {
   app.get('/api/getSingerList', (req, res) => {
     Promise.all([getSingerListPage(1), getSingerListPage(2), getSingerListPage(3)])
       .then(result => {
-        //* 歌手列表
+        // 歌手列表
         let singers = []
 
-        //* 3页歌手数据汇总
+        // 3页歌手数据汇总
         for (const item of result) {
           if (item.code === CODE_OK) {
             singers = singers.concat(item.singerList.data.singerlist)
@@ -90,7 +92,7 @@ function registerSinger(app) {
         }
 
         singers.forEach(item => {
-          /*
+          /**
            * 歌手名称转换成拼音
            * input: pinyin('周杰伦')
            * output: [ [ 'zhōu' ], [ 'jié' ], [ 'lún' ] ]
@@ -100,7 +102,7 @@ function registerSinger(app) {
           if (!p || !p.length) {
             return
           }
-          //* 获取歌手名称拼音首字母
+          // 获取歌手名称拼音首字母
           const key = p[0][0].slice(0, 1).toUpperCase()
           if (key) {
             if (!singerMap[key]) {
@@ -113,7 +115,7 @@ function registerSinger(app) {
           }
         })
 
-        //* 按首字母排序
+        // 按首字母排序
         const hot = []
         const letter = []
 
@@ -145,7 +147,7 @@ function registerSinger(app) {
   })
 }
 
-//& 格式化歌手列表
+// 格式化歌手列表
 function normalizeSingers(singers) {
   if (Array.isArray(singers)) {
     return singers.map(item => {

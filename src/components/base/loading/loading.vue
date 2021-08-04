@@ -134,7 +134,7 @@ export default {
 
     const loadingMessage = ref('Loading ...')
 
-    // 对loading directive提供的内部方法, 来动态修改loadingMessage的值
+    //* 对loading directive提供的内部方法, 来动态修改loadingMessage的值
     const setMessage = message => {
       loadingMessage.value = message
     }

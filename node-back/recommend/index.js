@@ -1,20 +1,18 @@
-// 获取签名方法
+//* 获取签名方法
 const getSecuritySign = require('../sign')
-// 请求相关函数
 const { get } = require('../request')
-// utils
 const { getRandomVal } = require('../utils')
 
-// 响应成功code
-const CODE_OK = 0
+//* 响应成功code
+const { CODE_OK } = require('./common')
 
-// 注册推荐列表接口路由
+//& 注册推荐列表接口路由
 function registerRecommend(app) {
   app.get('/api/getRecommend', (req, res) => {
-    // 第三方服务接口 url
+    //* 第三方服务接口 url
     const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'
 
-    // 构造请求 data 参数
+    //* 构造请求 data 参数
     const data = JSON.stringify({
       comm: { ct: 24 },
       recomPlaylist: {
@@ -29,12 +27,12 @@ function registerRecommend(app) {
       }
     })
 
-    // 随机数值
+    //* 随机数值
     const randomVal = getRandomVal('recom')
-    // 计算签名值
+    //* 计算签名值
     const sign = getSecuritySign(data)
 
-    // 发送 get 请求
+    //* 发送 get 请求
     get(url, {
       sign,
       '-': randomVal,
@@ -42,7 +40,7 @@ function registerRecommend(app) {
     }).then(response => {
       const data = response.data
       if (data.code === CODE_OK) {
-        // 处理轮播图数据
+        //* 处理轮播图数据
         const focusList = data.focus.data.shelf.v_niche[0].v_card
         const sliders = []
         const jumpPrefixMap = {
@@ -50,13 +48,13 @@ function registerRecommend(app) {
           10014: 'https://y.qq.com/n/yqq/playlist/',
           10012: 'https://y.qq.com/n/yqq/mv/v/'
         }
-        // 最多获取 10 条数据
+        //* 最多获取 10 条数据
         const len = Math.min(focusList.length, 10)
 
         for (let i = 0; i < len; i++) {
           const item = focusList[i]
           const sliderItem = {}
-          // 单个轮播图数据包括 id、pic、link 等字段
+          //* 单个轮播图数据包括 id、pic、link 等字段
           sliderItem.id = item.id
           sliderItem.pic = item.cover
           if (jumpPrefixMap[item.jumptype]) {
@@ -68,13 +66,13 @@ function registerRecommend(app) {
           sliders.push(sliderItem)
         }
 
-        // 处理推荐歌单数据
+        //* 处理推荐歌单数据
         const albumList = data.recomPlaylist.data.v_hot
         const albums = []
         for (let i = 0; i < albumList.length; i++) {
           const item = albumList[i]
           const albumItem = {}
-          // 推荐歌单数据包括 id、username、title、pic 等字段
+          //* 推荐歌单数据包括 id、username、title、pic 等字段
           albumItem.id = item.content_id
           albumItem.username = item.username
           albumItem.title = item.title
@@ -83,7 +81,7 @@ function registerRecommend(app) {
           albums.push(albumItem)
         }
 
-        // 往前端发送一个标准格式的响应数据，包括成功错误码和数据
+        //* 往前端发送一个标准格式的响应数据，包括成功错误码和数据
         res.json({
           code: CODE_OK,
           result: {

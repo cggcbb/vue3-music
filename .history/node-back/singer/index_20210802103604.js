@@ -2,11 +2,10 @@
 const getSecuritySign = require('../sign')
 const { get } = require('../request')
 const { getRandomVal } = require('../utils')
+const pinyin = require('pinyin')
 
 //* 响应成功code
-const { CODE_OK } = require('./common')
-
-const pinyin = require('pinyin')
+const CODE_OK = 0
 
 const HOT_NAME = '热'
 //* 默认前15名为热门歌手

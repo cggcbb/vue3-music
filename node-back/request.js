@@ -2,7 +2,7 @@ const axios = require('axios')
 
 const token = 5381
 
-// 公共参数
+//* 公共参数
 const commonParams = {
   g_tk: token,
   loginUin: 0,
@@ -15,8 +15,8 @@ const commonParams = {
   platform: 'yqq.json'
 }
 
-// 对 request get 请求的封装
-// 修改请求的 headers 值，合并公共请求参数
+//& 对 request get 请求的封装
+//& 修改请求的 headers 值，合并公共请求参数
 const get = (url, params) => {
   return axios.get(url, {
     headers: {
@@ -27,8 +27,8 @@ const get = (url, params) => {
   })
 }
 
-// 对 request post 请求的封装
-// 修改请求的 headers 值
+//& 对 request post 请求的封装
+//& 修改请求的 headers 值
 const post = (url, params) => {
   return axios.post(url, params, {
     headers: {

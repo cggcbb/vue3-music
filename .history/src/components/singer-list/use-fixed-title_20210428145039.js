@@ -55,7 +55,7 @@ export default function useFixedTitle(props) {
     return colors.value[index]
   }
 
-  // &计算每个区间的height
+  // 计算每个区间的height
   function calculateHeightsList() {
     const list = groupRef.value.children
     const heightsListVal = heightLists.value

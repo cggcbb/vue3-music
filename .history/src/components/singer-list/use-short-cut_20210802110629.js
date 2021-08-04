@@ -12,11 +12,11 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
   })
 
   watch(currentIndex, () => {
-    // * 设置shortcut的颜色
+    //* 设置shortcut的颜色
     document.body.style.setProperty('--shortcutColor', colors.value[currentIndex.value])
   })
 
-  // & touchstart
+  //& touchstart
   const onShortcutTouchStart = e => {
     const anchorIndex = parseInt(e.target.dataset.index)
     touch.anchorIndex = anchorIndex
@@ -24,7 +24,7 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
     scrollTo(anchorIndex)
   }
 
-  // & touchmove
+  //& touchmove
   const onShortcutTouchMove = e => {
     touch.y2 = e.touches[0].pageY
     const delta = ((touch.y2 - touch.y1) / SHORT_CUT_HEIGHT) | 0
@@ -32,7 +32,7 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
     scrollTo(anchorIndex)
   }
 
-  // & 滚动到指定element
+  //& 滚动到指定element
   function scrollTo(index) {
     if (isNaN(index)) {
       return

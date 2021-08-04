@@ -15,7 +15,7 @@ export default {
     const singers = ref([])
 
     onBeforeMount(async () => {
-      //* 获取歌手列表数据
+      // 获取歌手列表数据
       const result = await getSingerList()
       singers.value = result.singers
     })

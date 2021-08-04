@@ -12,7 +12,7 @@ const loadingDirective = {
     const instance = app.mount(document.createElement('div'))
     el.instance = instance
 
-    //* 添加loading 文案
+    // 添加loading 文案
     const loadingMessage = binding.arg
     if (loadingMessage) {
       instance.setMessage(loadingMessage)
@@ -23,7 +23,7 @@ const loadingDirective = {
     }
   },
   updated(el, binding) {
-    //* 修改loading 文案
+    // 修改loading 文案
     const loadingMessage = binding.arg
     if (loadingMessage) {
       el.instance.setMessage(loadingMessage)
