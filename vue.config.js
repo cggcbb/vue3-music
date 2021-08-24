@@ -1,5 +1,5 @@
 const registerRouter = require('./node-back')
-
+const express = require('express')
 module.exports = {
   css: {
     loaderOptions: {
@@ -14,6 +14,7 @@ module.exports = {
   },
   devServer: {
     before(app) {
+      app.use(express.json())
       registerRouter(app)
     }
   },
