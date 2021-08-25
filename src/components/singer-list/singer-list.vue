@@ -11,7 +11,12 @@
           {{ group.title }}
         </h2>
         <ul>
-          <li v-for="item in group.list" :key="item.id" class="item">
+          <li
+            v-for="item in group.list"
+            :key="item.id"
+            class="item"
+            @click="handleSingerClick(item)"
+          >
             <img class="avatar" v-lazy="item.pic" />
             <span class="name">{{ item.name }}</span>
           </li>
@@ -49,6 +54,7 @@ import useShortCut from './use-short-cut'
 export default {
   name: 'singer-list',
   components: { Scroll },
+  emits: ['singerSelect'],
   props: {
     data: {
       type: Array,
@@ -73,6 +79,10 @@ export default {
       groupRef
     })
 
+    const handleSingerClick = singerItem => {
+      emit('singerSelect', singerItem)
+    }
+
     return {
       onScroll,
       groupRef,
@@ -83,7 +93,8 @@ export default {
       shortcutList,
       onShortcutTouchStart,
       onShortcutTouchMove,
-      scrollRef
+      scrollRef,
+      handleSingerClick
     }
   }
 }

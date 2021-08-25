@@ -20,3 +20,17 @@ export const get = (url, params) => {
       console.log(e)
     })
 }
+
+export const post = (url, data) => {
+  return axios
+    .post(url, data)
+    .then(res => {
+      const serverData = res.data
+      if (serverData.code === CODE_OK) {
+        return serverData.result
+      }
+    })
+    .catch(e => {
+      console.log(e)
+    })
+}
