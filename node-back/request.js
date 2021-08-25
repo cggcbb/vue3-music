@@ -29,8 +29,8 @@ const get = (url, params) => {
 
 //& 对 request post 请求的封装
 //& 修改请求的 headers 值
-const post = (url, params) => {
-  return axios.post(url, params, {
+const post = (url, data) => {
+  return axios.post(url, data, {
     headers: {
       referer: 'https://y.qq.com/',
       origin: 'https://y.qq.com/',

@@ -4,7 +4,7 @@ const { get } = require('../request')
 const { getRandomVal } = require('../utils')
 
 //* 响应成功code
-const { CODE_OK } = require('./common')
+const { CODE_OK } = require('../common')
 
 //& 注册推荐列表接口路由
 function registerRecommend(app) {
@@ -71,13 +71,9 @@ function registerRecommend(app) {
         const albums = []
         for (let i = 0; i < albumList.length; i++) {
           const item = albumList[i]
-          const albumItem = {}
-          //* 推荐歌单数据包括 id、username、title、pic 等字段
-          albumItem.id = item.content_id
-          albumItem.username = item.username
-          albumItem.title = item.title
-          albumItem.pic = item.cover
 
+          //* 推荐歌单数据包括 id、username、title、pic 等字段
+          const albumItem = createAlbum(item)
           albums.push(albumItem)
         }
 
@@ -94,6 +90,19 @@ function registerRecommend(app) {
       }
     })
   })
+}
+
+function createAlbum(albumItem) {
+  return new Album(albumItem.content_id, albumItem.username, albumItem.title, albumItem.cover)
+}
+
+class Album {
+  constructor(id, username, title, pic) {
+    this.id = id
+    this.username = username
+    this.title = title
+    this.pic = pic
+  }
 }
 
 module.exports = registerRecommend

@@ -4,7 +4,7 @@ const { get } = require('../request')
 const { getRandomVal } = require('../utils')
 
 //* 响应成功code
-const { CODE_OK } = require('./common')
+const { CODE_OK } = require('../common')
 
 const pinyin = require('pinyin')
 
@@ -46,43 +46,25 @@ function getSingerRequestParams(page) {
   }
 }
 
-//& 分页获取歌手数据 ( 返回promise, 供Promise.all使用 )
-function getSingerListPage(page) {
-  return new Promise((resolve, reject) => {
-    const { randomVal, data, sign } = getSingerRequestParams(page)
-
-    get(url, {
-      sign,
-      '-': randomVal,
-      data
-    }).then(response => {
-      const data = response.data
-      if (data.code === CODE_OK) {
-        resolve(data)
-      } else {
-        reject(data)
-      }
-    })
-  })
-}
-
 //& 注册歌手数据接口路由
 function registerSinger(app) {
   app.get('/api/getSingerList', (req, res) => {
-    Promise.all([getSingerListPage(1), getSingerListPage(2), getSingerListPage(3)])
-      .then(result => {
-        //* 歌手列表
-        let singers = []
+    //* 歌手列表
+    let singers = []
 
+    //* 3页歌手数据汇总
+    const requests = [1, 2, 3].map(pageIndex => {
+      return getSingerListPage(pageIndex)
+    })
+
+    Promise.all(requests)
+      .then(result => {
         //* 3页歌手数据汇总
         for (const item of result) {
-          if (item.code === CODE_OK) {
-            singers = singers.concat(item.singerList.data.singerlist)
-          }
+          singers = singers.concat(item)
         }
-
         const singerMap = {
-          // 热门歌手
+          //* 热门歌手
           hot: {
             title: HOT_NAME,
             list: normalizeSingers(singers.slice(0, HOT_NUM))
@@ -142,6 +124,24 @@ function registerSinger(app) {
           message: err
         })
       })
+  })
+}
+
+//& 分页获取歌手数据 ( 返回promise, 供Promise.all使用 )
+function getSingerListPage(page) {
+  const { randomVal, data, sign } = getSingerRequestParams(page)
+
+  return new Promise((resolve, reject) => {
+    get(url, {
+      sign,
+      '-': randomVal,
+      data
+    }).then(response => {
+      const data = response.data
+      if (data.code === CODE_OK) {
+        resolve(data.singerList.data.singerlist)
+      }
+    })
   })
 }
 
