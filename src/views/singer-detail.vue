@@ -1,6 +1,16 @@
 <template>
-  <div class="singer-detail">
-    <music-list :title="title" :pic="pic" :songs="songs" :loading="loading" />
+  <div
+    class="singer-detail"
+    @touchstart.stop.prevent="onSingerDetailTouchStart"
+    @touchmove.stop.prevent="onSingerDetailTouchMove"
+  >
+    <music-list
+      :title="title"
+      :pic="pic"
+      :songs="songs"
+      :loading="loading"
+      :emptyText="emptyText"
+    />
   </div>
 </template>
 
@@ -30,6 +40,7 @@ export default {
     const pureSinger = ref({})
     const route = useRoute()
     const router = useRouter()
+    const touch = {}
 
     onBeforeMount(async () => {
       const _computedSinger = computedSinger()
@@ -62,11 +73,34 @@ export default {
 
     const pic = computed(() => pureSinger.value?.pic)
 
+    const emptyText = computed(() => {
+      return `抱歉，暂未搜索到 "${pureSinger.value.name}" 相关的歌曲`
+    })
+
+    // & onSingerDetailTouchStart 和 onSingerDetailTouchMove 实现详情页面短时间 (600ms 滑动了 200 像素) 向右滑动, 关闭
+    const onSingerDetailTouchStart = e => {
+      touch.x = e.touches[0].pageX
+      touch.startTime = +new Date()
+    }
+
+    const onSingerDetailTouchMove = e => {
+      const deltaX = e.touches[0].pageX - touch.x
+      const deltaTime = +new Date() - touch.startTime
+      if (deltaTime <= 600 && deltaX >= 200) {
+        router.push({
+          path: '/singer'
+        })
+      }
+    }
+
     return {
       title,
       pic,
       songs,
-      loading
+      loading,
+      emptyText,
+      onSingerDetailTouchStart,
+      onSingerDetailTouchMove
     }
   }
 }

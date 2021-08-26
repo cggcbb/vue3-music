@@ -30,6 +30,8 @@
       class="shortcut"
       @touchstart.stop.prevent="onShortcutTouchStart"
       @touchmove.stop.prevent="onShortcutTouchMove"
+      @touchend.stop.prevent="onShortcutTouchEnd"
+      v-show="shortcutList.length"
     >
       <ul>
         <li
@@ -42,6 +44,11 @@
           {{ item }}
         </li>
       </ul>
+    </div>
+    <div class="center-letter" :style="centerLetterStyle">
+      <div class="center-letter-content">
+        {{ centerLetter }}
+      </div>
     </div>
   </scroll>
 </template>
@@ -72,7 +79,15 @@ export default {
       colors
     } = useFixedTitle(props)
 
-    const { shortcutList, onShortcutTouchStart, onShortcutTouchMove, scrollRef } = useShortCut({
+    const {
+      shortcutList,
+      onShortcutTouchStart,
+      onShortcutTouchMove,
+      onShortcutTouchEnd,
+      scrollRef,
+      centerLetter,
+      centerLetterStyle
+    } = useShortCut({
       props,
       currentIndex,
       colors,
@@ -93,7 +108,10 @@ export default {
       shortcutList,
       onShortcutTouchStart,
       onShortcutTouchMove,
+      onShortcutTouchEnd,
       scrollRef,
+      centerLetter,
+      centerLetterStyle,
       handleSingerClick
     }
   }
@@ -166,6 +184,25 @@ $shortcutColor: var(--shortcutColor, #ffcd32);
       &.current {
         color: $shortcutColor;
       }
+    }
+  }
+  .center-letter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s 0.3s linear;
+    border-radius: 6px;
+    .center-letter-content {
+      font-size: 34px;
+      font-weight: 700;
+      font-family: 'fangsong';
+      color: $color-text-l;
     }
   }
 }

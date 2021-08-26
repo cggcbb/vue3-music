@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import lazyPlugin from 'vue3-lazy'
 import loadingDirective from '@/components/base/loading/directive'
+import emptyDirective from '@/components/base/empty/directive'
 
 //* 引入全局样式文件
 import '@/assets/scss/index.scss'
@@ -15,4 +16,5 @@ createApp(App)
     loading: require('@/assets/image/jay.png')
   })
   .directive('loading', loadingDirective)
+  .directive('empty', emptyDirective)
   .mount('#app')

@@ -11,6 +11,7 @@
       class="list"
       :style="scrollStyle"
       v-loading="loading"
+      v-empty:[emptyText]="empty"
       :probe-type="3"
       @scroll="handleScroll"
     >
@@ -24,7 +25,7 @@
 <script>
 import SongList from '@/components/base/song-list/song-list'
 import Scroll from '@/components/base/scroll/scroll'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useStyle from './useStyle'
 
@@ -43,7 +44,11 @@ export default {
     },
     title: String,
     pic: String,
-    loading: Boolean
+    loading: Boolean,
+    emptyText: {
+      type: String,
+      default: '抱歉，暂未搜索到相关内容'
+    }
   },
   setup(props) {
     const scrollY = ref(0)
@@ -55,18 +60,25 @@ export default {
     const handleScroll = pos => {
       scrollY.value = Math.round(-pos.y)
     }
+
     // * 返回
     const goBack = () => {
       router.back()
     }
+
+    // * 无歌曲
+    const empty = computed(() => {
+      return !props.loading && !props.songs.length
+    })
 
     return {
       bgImageStyle,
       bgImage,
       scrollStyle,
       filterStyle,
+      handleScroll,
       goBack,
-      handleScroll
+      empty
     }
   }
 }
