@@ -31,12 +31,10 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
 
   // & touchstart
   const onShortcutTouchStart = e => {
-    console.log(e.target.dataset)
     const anchorIndex = parseInt(e.target.dataset.index)
     touch.anchorIndex = anchorIndex
     touch.y1 = e.touches[0].pageY
     scrollTo(anchorIndex)
-
     showCenterLetter.value = true
   }
 
@@ -66,7 +64,7 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
     const scroll = scrollRef.value.scroll
     const targetElement = groupRef.value.children[index]
     scroll.scrollToElement(targetElement, 0)
-
+    // * 设置centerLetter的值
     centerLetter.value = shortcutList.value[index]
   }
 
