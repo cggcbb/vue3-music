@@ -1,8 +1,8 @@
 <template>
   <div
     class="singer-detail"
-    @touchstart.stop.prevent="onSingerDetailTouchStart"
-    @touchmove.stop.prevent="onSingerDetailTouchMove"
+    @touchstart="onSingerDetailTouchStart"
+    @touchmove="onSingerDetailTouchMove"
   >
     <music-list
       :title="title"
@@ -77,7 +77,7 @@ export default {
       return `抱歉，暂未搜索到 "${pureSinger.value.name}" 相关的歌曲`
     })
 
-    // & onSingerDetailTouchStart 和 onSingerDetailTouchMove 实现详情页面短时间 (600ms 滑动了 200 像素) 向右滑动, 关闭
+    // & onSingerDetailTouchStart 和 onSingerDetailTouchMove 实现详情页面短时间 (600ms 滑动了 260 像素) 向右滑动, 关闭
     const onSingerDetailTouchStart = e => {
       touch.x = e.touches[0].pageX
       touch.startTime = +new Date()
@@ -86,7 +86,7 @@ export default {
     const onSingerDetailTouchMove = e => {
       const deltaX = e.touches[0].pageX - touch.x
       const deltaTime = +new Date() - touch.startTime
-      if (deltaTime <= 600 && deltaX >= 200) {
+      if (deltaTime <= 600 && deltaX >= 260) {
         router.push({
           path: '/singer'
         })
