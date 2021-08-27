@@ -32,6 +32,7 @@
       @touchmove.stop.prevent="onShortcutTouchMove"
       @touchend.stop.prevent="onShortcutTouchEnd"
       v-show="shortcutList.length"
+      ref="shortcutRef"
     >
       <ul>
         <li
@@ -86,7 +87,8 @@ export default {
       onShortcutTouchEnd,
       scrollRef,
       centerLetter,
-      centerLetterStyle
+      centerLetterStyle,
+      shortcutRef
     } = useShortCut({
       props,
       currentIndex,
@@ -112,7 +114,8 @@ export default {
       scrollRef,
       centerLetter,
       centerLetterStyle,
-      handleSingerClick
+      handleSingerClick,
+      shortcutRef
     }
   }
 }
@@ -200,8 +203,6 @@ $shortcutColor: var(--shortcutColor, #ffcd32);
     border-radius: 6px;
     .center-letter-content {
       font-size: 34px;
-      font-weight: 700;
-      font-family: 'fangsong';
       color: $color-text-l;
     }
   }

@@ -3,6 +3,9 @@
     class="singer-detail"
     @touchstart="onSingerDetailTouchStart"
     @touchmove="onSingerDetailTouchMove"
+    @touchend="onSingerDetailTouchEnd"
+    :style="singerDetailStyle"
+    ref="singerDetailRef"
   >
     <music-list
       :title="title"
@@ -41,6 +44,8 @@ export default {
     const route = useRoute()
     const router = useRouter()
     const touch = {}
+    const singerDetailStyle = ref({})
+    const singerDetailRef = ref(null)
 
     onBeforeMount(async () => {
       const _computedSinger = computedSinger()
@@ -77,18 +82,64 @@ export default {
       return `抱歉，暂未搜索到 "${pureSinger.value.name}" 相关的歌曲`
     })
 
-    // & onSingerDetailTouchStart 和 onSingerDetailTouchMove 实现详情页面短时间 (600ms 滑动了 260 像素) 向右滑动, 关闭
+    //* 屏幕宽度
+    const singerDetailDomWidth = computed(() => singerDetailRef.value?.clientWidth)
+    //* 屏幕宽度一半
+    const singerDetailDomHalfWidth = computed(() => singerDetailDomWidth.value / 2)
+
+    // & touchstart 记录点击时 横坐标和点击时间
     const onSingerDetailTouchStart = e => {
       touch.x = e.touches[0].pageX
       touch.startTime = +new Date()
     }
 
+    // & touchMove 实现详情页面短时间 (600ms 滑动了 260 像素) 向右滑动, 关闭
+    // & 以及当从最左边30px之内开始按住, 能触发滑动效果
     const onSingerDetailTouchMove = e => {
-      const deltaX = e.touches[0].pageX - touch.x
-      const deltaTime = +new Date() - touch.startTime
-      if (deltaTime <= 600 && deltaX >= 260) {
+      const x1 = touch.x
+      const deltaX = Math.min(Math.max(e.touches[0].pageX - x1, 0), singerDetailDomWidth.value)
+      touch.deltaX = deltaX
+      // * 只有从最左边30px之内开始按住, 才能触发滑动效果
+      if (x1 <= 30) {
+        const opacity = Math.min(1, Math.max(0, 1 - deltaX / singerDetailDomWidth.value))
+        singerDetailStyle.value = {
+          opacity,
+          transform: `translate3d(${deltaX}px, 0, 0)`
+        }
+      } else {
+        const deltaTime = +new Date() - touch.startTime
+        if (deltaTime <= 600 && deltaX >= 260) {
+          router.push({
+            path: '/singer'
+          })
+        }
+      }
+    }
+
+    // & touchend的时候, 如果没有滑动到屏幕的一半距离, 则还原, 超出直接隐藏, 并跳转到歌手页面
+    const onSingerDetailTouchEnd = e => {
+      singerDetailStyle.value = createTouchEndSingerDetailStyle()
+      if (touch.deltaX >= singerDetailDomHalfWidth.value) {
         router.push({
           path: '/singer'
+        })
+      }
+    }
+    // & 获取touchend的时候, 此时 singerDetail 该有的style
+    const createTouchEndSingerDetailStyle = () => {
+      const deltaX = touch.deltaX
+      const result = {
+        transition: 'all .15s linear'
+      }
+      if (deltaX < singerDetailDomHalfWidth.value) {
+        return Object.assign({}, result, {
+          opacity: 1,
+          transform: 'translate3d(0, 0, 0)'
+        })
+      } else {
+        return Object.assign({}, result, {
+          opacity: 0,
+          transform: `translate3d(${singerDetailDomWidth.value}px, 0, 0)`
         })
       }
     }
@@ -100,7 +151,10 @@ export default {
       loading,
       emptyText,
       onSingerDetailTouchStart,
-      onSingerDetailTouchMove
+      onSingerDetailTouchMove,
+      onSingerDetailTouchEnd,
+      singerDetailStyle,
+      singerDetailRef
     }
   }
 }

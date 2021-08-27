@@ -1,4 +1,6 @@
-import { watch, ref, computed } from 'vue'
+import { watch, ref, computed, nextTick } from 'vue'
+
+const SHORTCUT_PADDING = 20
 
 export default function useShortCut({ props, currentIndex, colors, groupRef }) {
   const scrollRef = ref(null)
@@ -7,6 +9,9 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
   const centerLetter = ref(null)
   const showCenterLetter = ref(false)
   const shortcutList = ref([])
+  const shortcutRef = ref(null)
+  let shortcutTop = 0
+  let shortcutBottom = 0
 
   const stopWatchShortcutList = watch(
     () => props.data,
@@ -14,7 +19,17 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
       shortcutList.value = props.data.map(item => {
         return item.title
       })
+      /* nextTick 才能获取到数据渲染后shortcut的真实位置信息
+       * +- 20 是css设置了 padding: 20px
+       * 为了解决上下边界的问题
+       */
       stopWatchShortcutList()
+
+      nextTick(() => {
+        const shortcutRefRect = shortcutRef.value.getBoundingClientRect()
+        shortcutTop = shortcutRefRect.top + SHORTCUT_PADDING
+        shortcutBottom = shortcutRefRect.bottom - SHORTCUT_PADDING
+      })
     }
   )
 
@@ -29,13 +44,23 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
     }
   })
 
-  // & touchstart
+  /* eslint-disable */
+  // & touchstart (52-53行) 格式化有点问题, 暂且关闭eslint检测
   const onShortcutTouchStart = e => {
-    const anchorIndex = parseInt(e.target.dataset.index)
+    const pageY = e.touches[0].pageY
+    let index = e.target.dataset.index
+    index =
+      index === undefined
+        ? pageY < shortcutTop
+          ? 0
+          : pageY > shortcutBottom
+          ? shortcutList.value.length - 1
+          : null
+        : index
+    touch.y1 = pageY
+    const anchorIndex = parseInt(index)
     touch.anchorIndex = anchorIndex
-    touch.y1 = e.touches[0].pageY
     scrollTo(anchorIndex)
-    showCenterLetter.value = true
   }
 
   // & touchmove
@@ -48,6 +73,7 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
       shortcutList.value.length - 1
     )
     scrollTo(anchorIndex)
+    showCenterLetter.value = true
   }
 
   // & touchend
@@ -75,6 +101,7 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
     onShortcutTouchEnd,
     scrollRef,
     centerLetter,
-    centerLetterStyle
+    centerLetterStyle,
+    shortcutRef
   }
 }
