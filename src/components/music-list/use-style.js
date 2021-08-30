@@ -15,7 +15,7 @@ export default function useStyle(props, scrollY) {
     maxTranslateY.value = bgImageHeight - TITLE_HEIGHT
   })
 
-  // * 根据滚动 scrollY, 动态计算bgImage style
+  // & 根据滚动 scrollY, 动态计算bgImage style
   const bgImageStyle = computed(() => {
     const _scrollY = scrollY.value
 
@@ -24,7 +24,7 @@ export default function useStyle(props, scrollY) {
     let height = 0
     let translateZ = 0
 
-    // * 当scroll滚动到离顶部 40px 的时候
+    // & 当scroll滚动到离顶部 40px 的时候
     if (_scrollY > maxTranslateY.value) {
       zIndex = 10
       paddingTop = 0
@@ -47,14 +47,14 @@ export default function useStyle(props, scrollY) {
     }
   })
 
-  // * 动态计算scroll style ( 设置top 绝对定位的top值, 让歌手背景图片显示出来 )
+  // & 动态计算scroll style ( 设置top 绝对定位的top值, 让歌手背景图片显示出来 )
   const scrollStyle = computed(() => {
     return {
       top: `${picHeight.value}px`
     }
   })
 
-  // * 设置backdropFilter: blur 值, 达到模糊背景图片的目的
+  // & 设置backdropFilter: blur 值, 达到模糊背景图片的目的
   const filterStyle = computed(() => {
     let blur = 0
     const _scrollY = scrollY.value

@@ -34,6 +34,7 @@ import Scroll from '@/components/base/scroll/scroll'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useStyle from './use-style'
+import usePlay from './use-play'
 
 export default {
   name: 'music-list',
