@@ -17,7 +17,7 @@
             <i :class="playModeIcon" @click="changePlayMode"></i>
           </div>
           <div class="icon i-left" :class="disabledClass">
-            <i class="icon-prev" @click="handlePre"></i>
+            <i class="icon-prev" @click="handlePrev"></i>
           </div>
           <div class="icon i-center" :class="disabledClass">
             <i :class="playIcon" @click="togglePlay"></i>
@@ -42,131 +42,39 @@
 
 <script>
 import { useStore } from 'vuex'
-import { computed, watch, ref } from 'vue'
-import { SET_FULL_SCREEN, SET_PLAYING, SET_CURRENT_INDEX } from '@/store/mutation-types'
+import { computed } from 'vue'
+import { SET_FULL_SCREEN } from '@/store/mutation-types'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
+import useAudio from './use-audio'
+import usePlay from './use-play'
+
 export default {
   name: 'player',
   setup() {
-    const audioRef = ref(null)
-    const songReady = ref(null)
-
     // & vuex
     const store = useStore()
 
-    const currentSong = computed(() => store.getters.currentSong)
     const fullScreen = computed(() => store.getters.fullScreen)
     const playing = computed(() => store.getters.playing)
-    const playList = computed(() => store.getters.playList)
-    const currentIndex = computed(() => store.getters.currentIndex)
 
     // & hooks
     const { playModeIcon, changePlayMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
+    const { songReady, handleAudioPause, handleAudioCanPlay, handleAudioError } = useAudio()
+    const { audioRef, currentSong, togglePlay, handlePrev, handleNext } = usePlay(songReady)
 
     // & computed
     const playIcon = computed(() => (playing.value ? 'icon-pause' : 'icon-play'))
     const disabledClass = computed(() => (songReady.value ? '' : 'disable'))
-
-    // & user watch
-    watch(currentSong, newSong => {
-      if (!newSong.id || !newSong.url) {
-        return
-      }
-      songReady.value = false
-      const audioElement = audioRef.value
-      audioElement.src = newSong.url
-      audioElement.play()
-    })
-
-    watch(playing, newPlaying => {
-      if (!songReady.value) {
-        return
-      }
-      const audioElement = audioRef.value
-      newPlaying ? audioElement.play() : audioElement.pause()
-    })
 
     // & methods
     const handleMiniClick = () => {
       store.commit(SET_FULL_SCREEN, false)
     }
 
-    const togglePlay = () => {
-      if (!songReady.value) {
-        return
-      }
-      store.commit(SET_PLAYING, !playing.value)
-    }
-
-    const handlePre = () => {
-      if (playList.value.length === 1) {
-        loop()
-      } else {
-        changeCurrentSong(false)
-      }
-    }
-
-    const handleNext = () => {
-      if (playList.value.length === 1) {
-        loop()
-      } else {
-        changeCurrentSong(true)
-      }
-    }
-
-    // ! 修改当前播放歌曲 (上一曲和下一曲的逻辑)
-    const changeCurrentSong = isNext => {
-      const list = playList.value
-      if (!songReady.value || !list.length) {
-        return
-      }
-      let index = null
-      if (isNext) {
-        // * 已经是最后一曲, 则跳到第一曲
-        index = (currentIndex.value + 1) % list.length
-      } else {
-        // * 已经是第一曲, 则跳到最后一曲
-        index = currentIndex.value - 1
-        index = index < 0 ? list.length - 1 : index
-      }
-      store.commit(SET_CURRENT_INDEX, index)
-      if (!playing.value) {
-        store.commit(SET_PLAYING, true)
-      }
-    }
-
-    // ! 循环播放, 直接设置 audio 标签的 currentTime = 0
-    const loop = () => {
-      const audioElement = audioRef.value
-      audioElement.currentTime = 0
-      audioElement.play()
-    }
-
-    // ! audio 触发了 pause 事件 (eg: 笔记本屏幕合上等等...), 将 playing 设置成 false
-    const handleAudioPause = () => {
-      store.commit(SET_PLAYING, false)
-    }
-
-    // ! canplay 用于控制歌曲是否能播放
-    const handleAudioCanPlay = () => {
-      if (songReady.value) {
-        return
-      }
-      songReady.value = true
-    }
-
-    // ! 歌曲加载错误的时候, songReady 设置为 true, 防止不能点击上一曲, 下一曲
-    const handleAudioError = () => {
-      songReady.value = true
-    }
-
     return {
-      // * ref
-      audioRef,
       //* vuex
-      currentSong,
       fullScreen,
       // * hooks mode
       playModeIcon,
@@ -174,17 +82,21 @@ export default {
       // * hooks favorite
       getFavoriteIcon,
       toggleFavorite,
+      // * hooks audio
+      handleAudioPause,
+      handleAudioCanPlay,
+      handleAudioError,
+      // * hooks play
+      audioRef,
+      currentSong,
+      togglePlay,
+      handlePrev,
+      handleNext,
       // * computed
       playIcon,
       disabledClass,
       // * methods
-      handleMiniClick,
-      togglePlay,
-      handleAudioPause,
-      handlePre,
-      handleNext,
-      handleAudioCanPlay,
-      handleAudioError
+      handleMiniClick
     }
   }
 }

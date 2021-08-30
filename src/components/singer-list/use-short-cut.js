@@ -19,12 +19,12 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
       shortcutList.value = props.data.map(item => {
         return item.title
       })
-      /* nextTick 才能获取到数据渲染后shortcut的真实位置信息
-       * +- 20 是css设置了 padding: 20px
-       * 为了解决上下边界的问题
-       */
       stopWatchShortcutList()
 
+      /* nextTick 才能获取到数据渲染后shortcut的真实位置信息
+       * +- 20 是css设置了 padding: 20px
+       * 为了解决 shortcut 上下边界的问题
+       */
       nextTick(() => {
         const shortcutRefRect = shortcutRef.value.getBoundingClientRect()
         shortcutTop = shortcutRefRect.top + SHORTCUT_PADDING
@@ -73,10 +73,11 @@ export default function useShortCut({ props, currentIndex, colors, groupRef }) {
       shortcutList.value.length - 1
     )
     scrollTo(anchorIndex)
+    // * 开启大字母显示
     showCenterLetter.value = true
   }
 
-  // & touchend
+  // & touchend, 关闭大字母显示
   const onShortcutTouchEnd = e => {
     showCenterLetter.value = false
   }
