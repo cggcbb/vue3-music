@@ -5,6 +5,12 @@
     </div>
     <h1 class="title">{{ title }}</h1>
     <div class="bg-image" :style="bgImageStyle" ref="bgImage">
+      <div class="play-btn-wrapper" :style="playBtnStyle">
+        <div v-show="songs.length" class="play-btn" @click="handleRandomPlay">
+          <i class="icon-play"></i>
+          <span class="text">随机播放全部</span>
+        </div>
+      </div>
       <div class="filter" :style="filterStyle"></div>
     </div>
     <scroll
@@ -16,7 +22,7 @@
       @scroll="handleScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list :songs="songs" @selectSongItem="handleSelectSongItem"></song-list>
       </div>
     </scroll>
   </div>
@@ -52,19 +58,24 @@ export default {
     const scrollY = ref(0)
     const router = useRouter()
 
-    const { bgImage, bgImageStyle, scrollStyle, filterStyle } = useStyle(props, scrollY)
+    const { bgImage, bgImageStyle, scrollStyle, filterStyle, playBtnStyle } = useStyle(
+      props,
+      scrollY
+    )
 
-    // * 实时监听scroll滚动事件, 更新scrollY值
+    const { handleSelectSongItem, handleRandomPlay } = usePlay(props)
+
+    // & 实时监听scroll滚动事件, 更新scrollY值
     const handleScroll = pos => {
       scrollY.value = Math.round(-pos.y)
     }
 
-    // * 返回
+    // & 返回
     const goBack = () => {
       router.back()
     }
 
-    // * 无歌曲
+    // & 无歌曲
     const empty = computed(() => {
       return !props.loading && !props.songs.length
     })
@@ -74,9 +85,12 @@ export default {
       bgImage,
       scrollStyle,
       filterStyle,
+      playBtnStyle,
       handleScroll,
       goBack,
-      empty
+      empty,
+      handleSelectSongItem,
+      handleRandomPlay
     }
   }
 }

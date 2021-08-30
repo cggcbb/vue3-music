@@ -93,31 +93,31 @@ export default {
       touch.startTime = +new Date()
     }
 
-    // & touchMove 实现详情页面短时间 (600ms 滑动了 260 像素) 向右滑动, 关闭
-    // & 以及当从最左边30px之内开始按住, 能触发滑动效果
+    // & touchMove 当从最左边30px之内开始按住, 能触发滑动效果
     const onSingerDetailTouchMove = e => {
       const x1 = touch.x
       const deltaX = Math.min(Math.max(e.touches[0].pageX - x1, 0), singerDetailDomWidth.value)
       touch.deltaX = deltaX
-      // * 只有从最左边30px之内开始按住, 才能触发滑动效果
       if (x1 <= 30) {
-        const opacity = Math.min(1, Math.max(0, 1 - deltaX / singerDetailDomWidth.value))
         singerDetailStyle.value = {
-          opacity,
           transform: `translate3d(${deltaX}px, 0, 0)`
-        }
-      } else {
-        const deltaTime = +new Date() - touch.startTime
-        if (deltaTime <= 600 && deltaX >= 260) {
-          router.push({
-            path: '/singer'
-          })
         }
       }
     }
 
-    // & touchend的时候, 如果没有滑动到屏幕的一半距离, 则还原, 超出直接隐藏, 并跳转到歌手页面
+    // & touchend的时候, 实现详情页面短时间 (600ms 滑动了 160 像素) 向右滑动, 就跳到歌手页面
+    // & 如果从最左边30px之内开始按住, 并且没有滑动到屏幕的一半距离, 则还原, 超出直接隐藏, 并跳转到歌手页面
     const onSingerDetailTouchEnd = e => {
+      if (touch.x > 30) {
+        const deltaTime = +new Date() - touch.startTime
+        if (deltaTime <= 600 && touch.deltaX >= 160) {
+          singerDetailStyle.value = createTouchEndSingerDetailStyle(false)
+          router.push({
+            path: '/singer'
+          })
+        }
+        return
+      }
       singerDetailStyle.value = createTouchEndSingerDetailStyle()
       if (touch.deltaX >= singerDetailDomHalfWidth.value) {
         router.push({
@@ -126,19 +126,24 @@ export default {
       }
     }
     // & 获取touchend的时候, 此时 singerDetail 该有的style
-    const createTouchEndSingerDetailStyle = () => {
+    const createTouchEndSingerDetailStyle = (isSlide = true) => {
+      // * isSlide 触发了滑动效果
+      if (!isSlide) {
+        return {
+          transition: 'all .3s linear',
+          transform: 'translate3d(100%, 0, 0)'
+        }
+      }
       const deltaX = touch.deltaX
       const result = {
         transition: 'all .15s linear'
       }
       if (deltaX < singerDetailDomHalfWidth.value) {
         return Object.assign({}, result, {
-          opacity: 1,
           transform: 'translate3d(0, 0, 0)'
         })
       } else {
         return Object.assign({}, result, {
-          opacity: 0,
           transform: `translate3d(${singerDetailDomWidth.value}px, 0, 0)`
         })
       }

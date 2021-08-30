@@ -8,7 +8,7 @@ export default function useStyle(props, scrollY) {
   const maxTranslateY = ref(0)
   const picHeight = ref(0)
 
-  // * 获取头像背景图片高度 (用于设置 scroll-list 的top值)
+  // & 获取头像背景图片高度 (用于设置 scroll-list 的top值)
   onMounted(() => {
     const bgImageHeight = bgImage.value.clientHeight
     picHeight.value = bgImageHeight
@@ -68,10 +68,18 @@ export default function useStyle(props, scrollY) {
     }
   })
 
+  // & 动态计算 playBtn 按钮 style (滚到到顶部隐藏)
+  const playBtnStyle = computed(() => {
+    return {
+      display: scrollY.value >= maxTranslateY.value ? 'none' : ''
+    }
+  })
+
   return {
     bgImageStyle,
     scrollStyle,
     filterStyle,
+    playBtnStyle,
     bgImage
   }
 }
