@@ -56,7 +56,7 @@ export default function useFixedTitle(props) {
   }
 
   // &计算每个区间的height
-  function calculateHeightsList() {
+  const calculateHeightsList = () => {
     const list = groupRef.value.children
     const heightsListVal = heightLists.value
     let height = 0
@@ -70,7 +70,7 @@ export default function useFixedTitle(props) {
     }
   }
 
-  function onScroll(pos) {
+  const onScroll = pos => {
     scrollY.value = -pos.y
   }
 

@@ -27,7 +27,7 @@ import SongList from '@/components/base/song-list/song-list'
 import Scroll from '@/components/base/scroll/scroll'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import useStyle from './useStyle'
+import useStyle from './use-style'
 
 export default {
   name: 'music-list',
@@ -38,9 +38,7 @@ export default {
   props: {
     songs: {
       type: Array,
-      default() {
-        return []
-      }
+      default: () => []
     },
     title: String,
     pic: String,
