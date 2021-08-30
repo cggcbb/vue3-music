@@ -19,3 +19,11 @@ export const getRandomInt = max => {
 export const swap = (arr, i, j) => {
   ;[arr[i], arr[j]] = [arr[j], arr[i]]
 }
+
+// & 格式化时间 -> mm:ss
+export const formatTime = interval => {
+  const _interval = interval | 0
+  const minute = (((_interval / 60) | 0) + '').padStart(2, '0')
+  const second = ((_interval % 60) + '').padStart(2, '0')
+  return `${minute}:${second}`
+}

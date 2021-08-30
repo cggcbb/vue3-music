@@ -1,8 +1,9 @@
 import { useStore } from 'vuex'
 import { SET_PLAYING, SET_CURRENT_INDEX } from '@/store/mutation-types'
 import { ref, watch, computed } from 'vue'
+import { formatTime } from '@/assets/js/util'
 
-export default function usePlay(songReady) {
+export default function usePlay({ songReady, updateTime, manualPause }) {
   // & ref
   const audioRef = ref(null)
 
@@ -13,6 +14,11 @@ export default function usePlay(songReady) {
   const currentIndex = computed(() => store.getters.currentIndex)
   const currentSong = computed(() => store.getters.currentSong)
   const playing = computed(() => store.getters.playing)
+
+  // & computed
+  const currentTime = computed(() => formatTime(updateTime.value))
+  const duration = computed(() => formatTime(currentSong.value.duration))
+  const progress = computed(() => updateTime.value / currentSong.value.duration)
 
   // & methods
   const togglePlay = () => {
@@ -71,6 +77,7 @@ export default function usePlay(songReady) {
     if (!newSong.id || !newSong.url) {
       return
     }
+    updateTime.value = 0
     songReady.value = false
     const audioElement = audioRef.value
     audioElement.src = newSong.url
@@ -82,12 +89,26 @@ export default function usePlay(songReady) {
       return
     }
     const audioElement = audioRef.value
-    newPlaying ? audioElement.play() : audioElement.pause()
+    // * 设置是否手动触发了pause函数, 为了use-audio.js监听 audio 触发 pause 事件的时候, 是否需要再次 commit playing
+    // * 不设置是否手动, 会重复 commit playing
+    if (newPlaying) {
+      audioElement.play()
+      manualPause.value = false
+    } else {
+      audioElement.pause()
+      manualPause.value = true
+    }
   })
 
   return {
     audioRef,
+    // * vuex
     currentSong,
+    // * computed
+    currentTime,
+    duration,
+    progress,
+    // * methods
     togglePlay,
     handlePrev,
     handleNext

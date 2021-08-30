@@ -12,6 +12,13 @@
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{ currentTime }}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar :progress="progress"></progress-bar>
+          </div>
+          <span class="time time-r">{{ duration }}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left">
             <i :class="playModeIcon" @click="changePlayMode"></i>
@@ -36,6 +43,7 @@
       @pause="handleAudioPause"
       @canplay="handleAudioCanPlay"
       @error="handleAudioError"
+      @timeupdate="handleAudioTimeUpdate"
     ></audio>
   </div>
 </template>
@@ -48,9 +56,13 @@ import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import useAudio from './use-audio'
 import usePlay from './use-play'
+import ProgressBar from '@/components/base/progress-bar/progress-bar'
 
 export default {
   name: 'player',
+  components: {
+    ProgressBar
+  },
   setup() {
     // & vuex
     const store = useStore()
@@ -61,8 +73,31 @@ export default {
     // & hooks
     const { playModeIcon, changePlayMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
-    const { songReady, handleAudioPause, handleAudioCanPlay, handleAudioError } = useAudio()
-    const { audioRef, currentSong, togglePlay, handlePrev, handleNext } = usePlay(songReady)
+
+    const {
+      songReady,
+      updateTime,
+      manualPause,
+      handleAudioPause,
+      handleAudioCanPlay,
+      handleAudioError,
+      handleAudioTimeUpdate
+    } = useAudio()
+
+    const {
+      audioRef,
+      currentSong,
+      currentTime,
+      duration,
+      progress,
+      togglePlay,
+      handlePrev,
+      handleNext
+    } = usePlay({
+      songReady,
+      updateTime,
+      manualPause
+    })
 
     // & computed
     const playIcon = computed(() => (playing.value ? 'icon-pause' : 'icon-play'))
@@ -86,9 +121,13 @@ export default {
       handleAudioPause,
       handleAudioCanPlay,
       handleAudioError,
+      handleAudioTimeUpdate,
       // * hooks play
       audioRef,
       currentSong,
+      currentTime,
+      duration,
+      progress,
       togglePlay,
       handlePrev,
       handleNext,

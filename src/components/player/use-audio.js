@@ -4,11 +4,16 @@ import { SET_PLAYING } from '@/store/mutation-types'
 
 export default function useAudio() {
   const songReady = ref(null)
+  const updateTime = ref(0)
+  const manualPause = ref(false)
+
   const store = useStore()
 
-  // & audio 触发了 pause 事件 (eg: 笔记本屏幕合上等等...), 将 playing 设置成 false
+  // & 如果 audio 触发了 pause 事件 (eg: 笔记本屏幕合上等等..., 非手动触发), 将 playing 设置成 false
   const handleAudioPause = () => {
-    store.commit(SET_PLAYING, false)
+    if (!manualPause.value) {
+      store.commit(SET_PLAYING, false)
+    }
   }
 
   // & canplay 用于控制歌曲是否能播放
@@ -24,10 +29,20 @@ export default function useAudio() {
     songReady.value = true
   }
 
+  // & 播放器触发 timeupdate 事件, 更新 currentTime
+  const handleAudioTimeUpdate = e => {
+    updateTime.value = e.target.currentTime
+  }
+
   return {
+    // * ref
     songReady,
+    updateTime,
+    manualPause,
+    // * methods
     handleAudioPause,
     handleAudioCanPlay,
-    handleAudioError
+    handleAudioError,
+    handleAudioTimeUpdate
   }
 }
