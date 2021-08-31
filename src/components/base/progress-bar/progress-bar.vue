@@ -1,8 +1,14 @@
 <template>
-  <div class="progress-bar" ref="progressBarRef">
+  <div class="progress-bar" ref="progressBarRef" @click="handleProgressClick">
     <div class="bar-inner">
-      <div class="progress" :style="progressStyle"></div>
-      <div class="progress-btn-wrapper" :style="btnStyle">
+      <div class="progress" :style="progressStyle" ref="progressRef"></div>
+      <div
+        class="progress-btn-wrapper"
+        :style="btnStyle"
+        @touchstart.prevent="onProgressBtnTouchStart"
+        @touchmove.prevent="onProgressBtnTouchMove"
+        @touchend.prevent="onProgressBtnTouchEnd"
+      >
         <div class="progress-btn"></div>
       </div>
     </div>
@@ -11,21 +17,25 @@
 
 <script>
 import { watch, ref, computed } from 'vue'
-const progressBtnWidth = 16
-let barWidth = 0
+import useTouch from './use-touch'
+
+const halfProgressBtnWidth = 8
 
 export default {
   name: 'progress-bar',
+  emits: ['progress-changing', 'progress-changed'],
   props: {
     progress: {
       type: Number,
       default: 0
     }
   },
-  setup(props) {
+  setup(props, { emit }) {
     const progressBarRef = ref(null)
     const offset = ref(0)
+    const barWidth = ref(0)
 
+    // & computed
     const progressStyle = computed(() => {
       return {
         width: `${offset.value}px`
@@ -38,20 +48,44 @@ export default {
       }
     })
 
+    // & hooks
+    const {
+      progressRef,
+      onProgressBtnTouchStart,
+      onProgressBtnTouchMove,
+      onProgressBtnTouchEnd,
+      handleProgressClick
+    } = useTouch(
+      { emit },
+      {
+        barWidth,
+        offset,
+        progressBarRef
+      }
+    )
+
+    // * user watcher
     watch(
       () => props.progress,
       newProgress => {
-        if (barWidth <= 0) {
-          barWidth = progressBarRef.value.clientWidth - progressBtnWidth
+        const barWidthVal = barWidth.value
+        if (barWidthVal <= 0) {
+          barWidth.value = progressBarRef.value.clientWidth - halfProgressBtnWidth
         }
-        offset.value = barWidth * newProgress
+        offset.value = barWidthVal * newProgress
       }
     )
 
     return {
       progressBarRef,
       progressStyle,
-      btnStyle
+      btnStyle,
+      // * hooks touch
+      progressRef,
+      onProgressBtnTouchStart,
+      onProgressBtnTouchMove,
+      onProgressBtnTouchEnd,
+      handleProgressClick
     }
   }
 }
@@ -65,10 +99,12 @@ export default {
     top: 13px;
     height: 4px;
     background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
     .progress {
       position: absolute;
       height: 100%;
       background: $color-theme;
+      border-radius: 4px;
     }
     .progress-btn-wrapper {
       position: absolute;

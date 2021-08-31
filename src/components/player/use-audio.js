@@ -6,6 +6,7 @@ export default function useAudio() {
   const songReady = ref(null)
   const updateTime = ref(0)
   const manualPause = ref(false)
+  const progressChanging = ref(false)
 
   const store = useStore()
 
@@ -29,9 +30,11 @@ export default function useAudio() {
     songReady.value = true
   }
 
-  // & 播放器触发 timeupdate 事件, 更新 currentTime
+  // & 播放器触发 timeupdate 事件, 非拖动进度条的情况下, 更新 currentTime
   const handleAudioTimeUpdate = e => {
-    updateTime.value = e.target.currentTime
+    if (!progressChanging.value) {
+      updateTime.value = e.target.currentTime
+    }
   }
 
   return {
@@ -39,6 +42,7 @@ export default function useAudio() {
     songReady,
     updateTime,
     manualPause,
+    progressChanging,
     // * methods
     handleAudioPause,
     handleAudioCanPlay,

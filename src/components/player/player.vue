@@ -15,7 +15,11 @@
         <div class="progress-wrapper">
           <span class="time time-l">{{ currentTime }}</span>
           <div class="progress-bar-wrapper">
-            <progress-bar :progress="progress"></progress-bar>
+            <progress-bar
+              :progress="progress"
+              @progress-changing="handleProgressChanging"
+              @progress-changed="handleProgressChanged"
+            ></progress-bar>
           </div>
           <span class="time time-r">{{ duration }}</span>
         </div>
@@ -57,6 +61,7 @@ import useFavorite from './use-favorite'
 import useAudio from './use-audio'
 import usePlay from './use-play'
 import ProgressBar from '@/components/base/progress-bar/progress-bar'
+import useProgress from './use-progress'
 
 export default {
   name: 'player',
@@ -78,6 +83,7 @@ export default {
       songReady,
       updateTime,
       manualPause,
+      progressChanging,
       handleAudioPause,
       handleAudioCanPlay,
       handleAudioError,
@@ -97,6 +103,13 @@ export default {
       songReady,
       updateTime,
       manualPause
+    })
+
+    const { handleProgressChanging, handleProgressChanged } = useProgress({
+      audioRef,
+      currentSong,
+      updateTime,
+      progressChanging
     })
 
     // & computed
@@ -131,6 +144,9 @@ export default {
       togglePlay,
       handlePrev,
       handleNext,
+      // * hooks progress
+      handleProgressChanging,
+      handleProgressChanged,
       // * computed
       playIcon,
       disabledClass,
