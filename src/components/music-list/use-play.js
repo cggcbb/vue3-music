@@ -7,6 +7,7 @@ export default function usePlay(props) {
   const handleSelectSongItem = ({ song, index }) => {
     store.dispatch('selectPlay', {
       list: props.songs,
+      song,
       index
     })
   }

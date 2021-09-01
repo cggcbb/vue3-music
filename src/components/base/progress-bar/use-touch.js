@@ -1,9 +1,9 @@
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 
 export default function useTouch({ emit }, { barWidth, offset, progressBarRef }) {
   const progressRef = ref(null)
-  const touch = reactive({})
   let isProgressChanging = false
+  const touch = {}
 
   const onProgressBtnTouchStart = e => {
     touch.x1 = e.touches[0].pageX

@@ -1,7 +1,8 @@
 import { useStore } from 'vuex'
 import { SET_PLAYING, SET_CURRENT_INDEX } from '@/store/mutation-types'
 import { ref, watch, computed } from 'vue'
-import { formatTime } from '@/assets/js/util'
+import { formatTime, sleep } from '@/assets/js/util'
+import { PLAY_MODE_LOOP } from '@/assets/js/constant'
 
 export default function usePlay({ songReady, updateTime, manualPause }) {
   // & ref
@@ -14,6 +15,7 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
   const currentIndex = computed(() => store.getters.currentIndex)
   const currentSong = computed(() => store.getters.currentSong)
   const playing = computed(() => store.getters.playing)
+  const playMode = computed(() => store.getters.mode)
 
   // & computed
   const currentTime = computed(() => formatTime(updateTime.value))
@@ -38,6 +40,17 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
 
   const handleNext = () => {
     if (playList.value.length === 1) {
+      loop()
+    } else {
+      changeCurrentSong(true)
+    }
+  }
+
+  // ! 歌曲自动播放完毕
+  const handleAudioEnded = async () => {
+    await sleep(1500)
+    updateTime.value = 0
+    if (playMode.value === PLAY_MODE_LOOP) {
       loop()
     } else {
       changeCurrentSong(true)
@@ -70,6 +83,9 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
     const audioElement = audioRef.value
     audioElement.currentTime = 0
     audioElement.play()
+    if (!playing.value) {
+      store.commit(SET_PLAYING, true)
+    }
   }
 
   // & user watch
@@ -111,6 +127,7 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
     // * methods
     togglePlay,
     handlePrev,
-    handleNext
+    handleNext,
+    handleAudioEnded
   }
 }

@@ -48,6 +48,7 @@
       @canplay="handleAudioCanPlay"
       @error="handleAudioError"
       @timeupdate="handleAudioTimeUpdate"
+      @ended="handleAudioEnded"
     ></audio>
   </div>
 </template>
@@ -98,7 +99,8 @@ export default {
       progress,
       togglePlay,
       handlePrev,
-      handleNext
+      handleNext,
+      handleAudioEnded
     } = usePlay({
       songReady,
       updateTime,
@@ -144,6 +146,7 @@ export default {
       togglePlay,
       handlePrev,
       handleNext,
+      handleAudioEnded,
       // * hooks progress
       handleProgressChanging,
       handleProgressChanged,

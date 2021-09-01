@@ -1,6 +1,7 @@
 import { useStore } from 'vuex'
-import { PLAY_MODE_SEQUENCE, PLAY_MODE_RANDOM } from '@/assets/js/constant'
+import { PLAY_MODE_SEQUENCE, PLAY_MODE_RANDOM, MODE_KEY } from '@/assets/js/constant'
 import { computed } from 'vue'
+import storage from 'good-storage'
 
 export default function useMode() {
   const store = useStore()
@@ -19,6 +20,7 @@ export default function useMode() {
   const changePlayMode = () => {
     const mode = (playMode.value + 1) % 3
     store.dispatch('changePlayMode', mode)
+    storage.set(MODE_KEY, mode)
   }
 
   return {

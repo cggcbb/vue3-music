@@ -27,3 +27,5 @@ export const formatTime = interval => {
   const second = ((_interval % 60) + '').padStart(2, '0')
   return `${minute}:${second}`
 }
+
+export const sleep = delay => new Promise(resolve => setTimeout(resolve, delay))

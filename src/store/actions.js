@@ -1,11 +1,16 @@
 import * as types from './mutation-types'
-import { PLAY_MODE_SEQUENCE, PLAY_MODE_RANDOM } from '@/assets/js/constant'
+import { PLAY_MODE_RANDOM } from '@/assets/js/constant'
 import { shuffle } from '@/assets/js/util'
 
-export const selectPlay = ({ commit, state }, { list, index }) => {
+export const selectPlay = ({ commit, state }, { list, song, index }) => {
   commit(types.SET_SEQUENCE_LIST, list)
-  commit(types.SET_PLAY_LIST, list)
-  commit(types.SET_MODE, PLAY_MODE_SEQUENCE)
+  if (state.mode === PLAY_MODE_RANDOM) {
+    commit(types.SET_PLAY_LIST, shuffle(list))
+    index = state.playList.findIndex(item => item.id === song.id)
+  } else {
+    commit(types.SET_PLAY_LIST, list)
+  }
+  commit(types.SET_MODE, state.mode)
   commit(types.SET_FULL_SCREEN, true)
   commit(types.SET_PLAYING, true)
   commit(types.SET_CURRENT_INDEX, index)
