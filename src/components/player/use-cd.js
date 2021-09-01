@@ -1,7 +1,7 @@
 import { useStore } from 'vuex'
 import { ref, computed, watch } from 'vue'
 
-export default function useCd() {
+export default function useCd({ playingEnd }) {
   // & ref
   const cdImageRef = ref(null)
   const cdRef = ref(null)
@@ -16,17 +16,30 @@ export default function useCd() {
     return playing.value ? 'playing' : ''
   })
 
+  const cdEndClass = computed(() => {
+    return playingEnd.value ? 'cd-end' : ''
+  })
+
   // & user watcher
   watch(playing, newPlaying => {
-    if (!newPlaying.value) {
+    if (!newPlaying && !playingEnd.value) {
       syncCdWrapperTransform(cdRef.value, cdImageRef.value)
     }
   })
 
+  watch(playingEnd, async newPlayingEnd => {
+    if (newPlayingEnd) {
+      cdRef.value.style.transform = ''
+    }
+  })
+
   // & 同步cd旋转角度
-  function syncCdWrapperTransform(wrapper, inner) {
+  async function syncCdWrapperTransform(wrapper, inner) {
+    wrapper.style.transition = ''
+
     const innerCdTransform = getComputedStyle(inner).transform
     const outerCdTransform = getComputedStyle(wrapper).transform
+
     wrapper.style.transform =
       outerCdTransform === 'none'
         ? innerCdTransform
@@ -36,6 +49,7 @@ export default function useCd() {
   return {
     cdImageRef,
     cdRef,
-    cdClass
+    cdClass,
+    cdEndClass
   }
 }

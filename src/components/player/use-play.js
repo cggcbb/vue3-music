@@ -7,6 +7,7 @@ import { PLAY_MODE_LOOP } from '@/assets/js/constant'
 export default function usePlay({ songReady, updateTime, manualPause }) {
   // & ref
   const audioRef = ref(null)
+  const playingEnd = ref(false)
 
   // & vuex
   const store = useStore()
@@ -48,7 +49,10 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
 
   // ! 歌曲自动播放完毕
   const handleAudioEnded = async () => {
-    await sleep(1500)
+    playingEnd.value = true
+    store.commit(SET_PLAYING, false)
+    await sleep(1000)
+    playingEnd.value = false
     updateTime.value = 0
     if (playMode.value === PLAY_MODE_LOOP) {
       loop()
@@ -118,6 +122,7 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
 
   return {
     audioRef,
+    playingEnd,
     // * vuex
     currentSong,
     // * computed

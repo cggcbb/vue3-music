@@ -14,7 +14,7 @@
       <div class="middle">
         <div class="middle-l">
           <div class="cd-wrapper">
-            <div class="cd" ref="cdRef">
+            <div class="cd" ref="cdRef" :class="cdEndClass">
               <img ref="cdImageRef" class="image" :class="cdClass" :src="currentSong.pic" />
             </div>
           </div>
@@ -103,6 +103,7 @@ export default {
 
     const {
       audioRef,
+      playingEnd,
       currentSong,
       currentTime,
       duration,
@@ -125,7 +126,7 @@ export default {
       playing
     })
 
-    const { cdImageRef, cdRef, cdClass } = useCd()
+    const { cdImageRef, cdRef, cdClass, cdEndClass } = useCd({ playingEnd })
 
     // & computed
     const playIcon = computed(() => (playing.value ? 'icon-pause' : 'icon-play'))
@@ -167,6 +168,7 @@ export default {
       cdImageRef,
       cdRef,
       cdClass,
+      cdEndClass,
       // * computed
       playIcon,
       disabledClass,
@@ -255,6 +257,8 @@ export default {
           width: 80%;
           box-sizing: border-box;
           height: 100%;
+          perspective: 800px;
+          transform-style: preserve-3d;
           .cd {
             width: 100%;
             height: 100%;
@@ -272,6 +276,11 @@ export default {
             .playing {
               animation: rotate 20s linear infinite;
             }
+          }
+          .cd-end {
+            transition: all 0.6s linear;
+            transform: translate3d(0, 300px, 20px);
+            opacity: 0;
           }
         }
         .playing-lyric-wrapper {
