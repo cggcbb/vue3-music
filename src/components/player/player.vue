@@ -11,6 +11,15 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
+      <div class="middle">
+        <div class="middle-l">
+          <div class="cd-wrapper">
+            <div class="cd" ref="cdRef">
+              <img ref="cdImageRef" class="image" :class="cdClass" :src="currentSong.pic" />
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="bottom">
         <div class="progress-wrapper">
           <span class="time time-l">{{ currentTime }}</span>
@@ -63,6 +72,7 @@ import useAudio from './use-audio'
 import usePlay from './use-play'
 import ProgressBar from '@/components/base/progress-bar/progress-bar'
 import useProgress from './use-progress'
+import useCd from './use-cd'
 
 export default {
   name: 'player',
@@ -111,8 +121,11 @@ export default {
       audioRef,
       currentSong,
       updateTime,
-      progressChanging
+      progressChanging,
+      playing
     })
+
+    const { cdImageRef, cdRef, cdClass } = useCd()
 
     // & computed
     const playIcon = computed(() => (playing.value ? 'icon-pause' : 'icon-play'))
@@ -150,6 +163,10 @@ export default {
       // * hooks progress
       handleProgressChanging,
       handleProgressChanged,
+      // * hooks cd
+      cdImageRef,
+      cdRef,
+      cdClass,
       // * computed
       playIcon,
       disabledClass,
