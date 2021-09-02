@@ -103,6 +103,7 @@ export default {
 
     const {
       audioRef,
+      cdRef,
       playingEnd,
       currentSong,
       currentTime,
@@ -126,11 +127,11 @@ export default {
       playing
     })
 
-    const { cdImageRef, cdRef, cdClass, cdEndClass } = useCd({ playingEnd })
+    const { cdImageRef, cdClass, cdEndClass } = useCd({ playingEnd, cdRef })
 
     // & computed
     const playIcon = computed(() => (playing.value ? 'icon-pause' : 'icon-play'))
-    const disabledClass = computed(() => (songReady.value ? '' : 'disable'))
+    const disabledClass = computed(() => (songReady.value && !playingEnd.value ? '' : 'disable'))
 
     // & methods
     const handleMiniClick = () => {
@@ -263,6 +264,7 @@ export default {
             width: 100%;
             height: 100%;
             border-radius: 50%;
+            transition: all 0.4s linear;
             img {
               position: absolute;
               left: 0;
@@ -278,7 +280,7 @@ export default {
             }
           }
           .cd-end {
-            transition: all 0.6s linear;
+            transition: all 0.4s linear;
             transform: translate3d(0, 300px, 20px);
             opacity: 0;
           }

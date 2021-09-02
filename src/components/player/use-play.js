@@ -8,6 +8,7 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
   // & ref
   const audioRef = ref(null)
   const playingEnd = ref(false)
+  const cdRef = ref(null)
 
   // & vuex
   const store = useStore()
@@ -32,6 +33,7 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
   }
 
   const handlePrev = () => {
+    store.commit(SET_PLAYING, false)
     if (playList.value.length === 1) {
       loop()
     } else {
@@ -40,6 +42,7 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
   }
 
   const handleNext = () => {
+    store.commit(SET_PLAYING, false)
     if (playList.value.length === 1) {
       loop()
     } else {
@@ -49,10 +52,15 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
 
   // ! 歌曲自动播放完毕
   const handleAudioEnded = async () => {
+    // * 这里各种控制transform, transition, sleep, playingEnd, 为了优化cd暂停和播放结束后的动画
+    cdRef.value.style.transform = ''
+    await sleep(20)
+    cdRef.value.style.transition = ''
     playingEnd.value = true
     store.commit(SET_PLAYING, false)
     await sleep(1000)
     playingEnd.value = false
+
     updateTime.value = 0
     if (playMode.value === PLAY_MODE_LOOP) {
       loop()
@@ -62,7 +70,7 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
   }
 
   // ! 修改当前播放歌曲 (上一曲和下一曲的逻辑)
-  const changeCurrentSong = isNext => {
+  const changeCurrentSong = async isNext => {
     const list = playList.value
     if (!songReady.value || !list.length) {
       return
@@ -78,16 +86,20 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
     }
     store.commit(SET_CURRENT_INDEX, index)
     if (!playing.value) {
+      // * 延迟 600ms 播放
+      await sleep(600)
       store.commit(SET_PLAYING, true)
     }
   }
 
   // ! 循环播放, 直接设置 audio 标签的 currentTime = 0
-  const loop = () => {
+  const loop = async () => {
     const audioElement = audioRef.value
     audioElement.currentTime = 0
     audioElement.play()
     if (!playing.value) {
+      // * 延迟 600ms 播放
+      await sleep(600)
       store.commit(SET_PLAYING, true)
     }
   }
@@ -97,6 +109,7 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
     if (!newSong.id || !newSong.url) {
       return
     }
+    cdRef.value.style.transform = ''
     updateTime.value = 0
     songReady.value = false
     const audioElement = audioRef.value
@@ -123,6 +136,7 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
   return {
     audioRef,
     playingEnd,
+    cdRef,
     // * vuex
     currentSong,
     // * computed
