@@ -39,7 +39,7 @@
           <div class="icon i-left" :class="disabledClass">
             <i class="icon-prev" @click="handlePrev"></i>
           </div>
-          <div class="icon i-center" :class="disabledClass">
+          <div class="icon i-center" :class="disabledClass" ref="playBtnRef">
             <i :class="playIcon" @click="togglePlay"></i>
           </div>
           <div class="icon i-right" :class="disabledClass">
@@ -104,6 +104,7 @@ export default {
     const {
       audioRef,
       cdRef,
+      playBtnRef,
       playingEnd,
       currentSong,
       currentTime,
@@ -154,6 +155,7 @@ export default {
       handleAudioTimeUpdate,
       // * hooks play
       audioRef,
+      playBtnRef,
       currentSong,
       currentTime,
       duration,
@@ -181,6 +183,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$cdTransformY: var(--cdTransformY, '300px');
+
 .player {
   .normal-player {
     position: fixed;
@@ -258,8 +262,6 @@ export default {
           width: 80%;
           box-sizing: border-box;
           height: 100%;
-          perspective: 800px;
-          transform-style: preserve-3d;
           .cd {
             width: 100%;
             height: 100%;
@@ -281,7 +283,7 @@ export default {
           }
           .cd-end {
             transition: all 0.4s linear;
-            transform: translate3d(0, 300px, 20px);
+            transform: translate3d(0px, $cdTransformY, 0) scale(0);
             opacity: 0;
           }
         }

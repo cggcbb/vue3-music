@@ -7,8 +7,10 @@ import { PLAY_MODE_LOOP } from '@/assets/js/constant'
 export default function usePlay({ songReady, updateTime, manualPause }) {
   // & ref
   const audioRef = ref(null)
-  const playingEnd = ref(false)
   const cdRef = ref(null)
+  const playBtnRef = ref(null)
+  const playingEnd = ref(false)
+  let cdTransformY = 0
 
   // & vuex
   const store = useStore()
@@ -52,6 +54,8 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
 
   // ! 歌曲自动播放完毕
   const handleAudioEnded = async () => {
+    calculateCdTransformY()
+
     // * 这里各种控制transform, transition, sleep, playingEnd, 为了优化cd暂停和播放结束后的动画
     cdRef.value.style.transform = ''
     await sleep(20)
@@ -104,6 +108,19 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
     }
   }
 
+  // ! 获取播放结束 cd 需要移动的 transformY 的距离 (cd圆心 到 播放按钮圆心)
+  const calculateCdTransformY = () => {
+    if (!cdTransformY) {
+      const cdClient = cdRef.value.getBoundingClientRect()
+      const playBtnClient = playBtnRef.value.getBoundingClientRect()
+      const cdCenterY = parseInt(cdClient.top + cdClient.height / 2)
+      const playBtnCenterY = parseInt(playBtnClient.top + playBtnClient.height / 2)
+      const deltaY = playBtnCenterY - cdCenterY
+      cdTransformY = deltaY
+      document.body.style.setProperty('--cdTransformY', `${cdTransformY}px`)
+    }
+  }
+
   // & user watch
   watch(currentSong, newSong => {
     if (!newSong.id || !newSong.url) {
@@ -135,8 +152,9 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
 
   return {
     audioRef,
-    playingEnd,
     cdRef,
+    playBtnRef,
+    playingEnd,
     // * vuex
     currentSong,
     // * computed
