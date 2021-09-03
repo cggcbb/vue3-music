@@ -1,4 +1,3 @@
-const querystring = require('querystring')
 const { post } = require('../request')
 const { getRandomVal, getUid } = require('../utils')
 const getSecuritySign = require('../sign')
