@@ -63,6 +63,7 @@
 </template>
 
 <script>
+import ProgressBar from '@/components/base/progress-bar/progress-bar'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { SET_FULL_SCREEN } from '@/store/mutation-types'
@@ -70,9 +71,9 @@ import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import useAudio from './use-audio'
 import usePlay from './use-play'
-import ProgressBar from '@/components/base/progress-bar/progress-bar'
 import useProgress from './use-progress'
 import useCd from './use-cd'
+import useLyric from './use-lyric'
 
 export default {
   name: 'player',
@@ -129,6 +130,8 @@ export default {
     })
 
     const { cdImageRef, cdClass, cdEndClass } = useCd({ playingEnd, cdRef })
+
+    useLyric()
 
     // & computed
     const playIcon = computed(() => (playing.value ? 'icon-pause' : 'icon-play'))

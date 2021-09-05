@@ -1,4 +1,4 @@
-import { post } from './base'
+import { get, post } from './base'
 
 export const processSongPureUrl = songs => {
   if (!songs.length) {
@@ -16,5 +16,14 @@ export const processSongPureUrl = songs => {
       .filter(song => {
         return song.url.includes('vkey')
       })
+  })
+}
+
+export const getSongLyric = song => {
+  return get('/api/getSongLyric', {
+    mid: song.mid
+  }).then(result => {
+    const lyric = result?.lyric || '[00:00:00] 该歌曲暂时无法获取歌词'
+    return lyric
   })
 }
