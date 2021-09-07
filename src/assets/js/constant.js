@@ -4,6 +4,8 @@ export const FAVORITE_KEY = '__favorite__'
 
 export const MODE_KEY = '__MODE__'
 
+export const LYRIC_KEY = '__lyric__'
+
 export const PLAY_MODE_SEQUENCE = 0
 
 export const PLAY_MODE_LOOP = 1

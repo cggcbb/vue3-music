@@ -19,6 +19,20 @@
             </div>
           </div>
         </div>
+        <scroll class="middle-r">
+          <div class="lyric-wrapper">
+            <div v-if="currentLyric">
+              <p
+                class="text"
+                :class="{ current: currentLineNum === index }"
+                v-for="(line, index) in currentLyric.lines"
+                :key="line.num"
+              >
+                {{ line.txt }}
+              </p>
+            </div>
+          </div>
+        </scroll>
       </div>
       <div class="bottom">
         <div class="progress-wrapper">
@@ -64,6 +78,7 @@
 
 <script>
 import ProgressBar from '@/components/base/progress-bar/progress-bar'
+import Scroll from '@/components/base/scroll/scroll'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { SET_FULL_SCREEN } from '@/store/mutation-types'
@@ -78,7 +93,8 @@ import useLyric from './use-lyric'
 export default {
   name: 'player',
   components: {
-    ProgressBar
+    ProgressBar,
+    Scroll
   },
   setup() {
     // & vuex
@@ -131,7 +147,7 @@ export default {
 
     const { cdImageRef, cdClass, cdEndClass } = useCd({ playingEnd, cdRef })
 
-    useLyric()
+    const { currentLyric, currentLineNum } = useLyric()
 
     // & computed
     const playIcon = computed(() => (playing.value ? 'icon-pause' : 'icon-play'))
@@ -175,6 +191,9 @@ export default {
       cdRef,
       cdClass,
       cdEndClass,
+      // * hooks lyric
+      currentLyric,
+      currentLineNum,
       // * computed
       playIcon,
       disabledClass,
