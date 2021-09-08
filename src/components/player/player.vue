@@ -18,10 +18,13 @@
               <img ref="cdImageRef" class="image" :class="cdClass" :src="currentSong.pic" />
             </div>
           </div>
+          <div class="playing-lyric-wrapper">
+            <div class="playing-lyric">{{ playingLyric }}</div>
+          </div>
         </div>
-        <scroll class="middle-r">
+        <scroll class="middle-r" ref="lyricScrollRef">
           <div class="lyric-wrapper">
-            <div v-if="currentLyric">
+            <div v-if="currentLyric" ref="lyricListRef">
               <p
                 class="text"
                 :class="{ current: currentLineNum === index }"
@@ -30,6 +33,9 @@
               >
                 {{ line.txt }}
               </p>
+            </div>
+            <div class="pure-music" v-show="pureMusicLyric">
+              <p>{{ pureMusicLyric }}</p>
             </div>
           </div>
         </scroll>
@@ -113,10 +119,23 @@ export default {
       manualPause,
       progressChanging,
       handleAudioPause,
-      handleAudioCanPlay,
       handleAudioError,
       handleAudioTimeUpdate
     } = useAudio()
+
+    const {
+      lyricScrollRef,
+      lyricListRef,
+      currentLyric,
+      currentLineNum,
+      playLyric,
+      stopLyric,
+      pureMusicLyric,
+      playingLyric
+    } = useLyric({
+      songReady,
+      updateTime
+    })
 
     const {
       audioRef,
@@ -134,7 +153,9 @@ export default {
     } = usePlay({
       songReady,
       updateTime,
-      manualPause
+      manualPause,
+      playLyric,
+      stopLyric
     })
 
     const { handleProgressChanging, handleProgressChanged } = useProgress({
@@ -142,12 +163,12 @@ export default {
       currentSong,
       updateTime,
       progressChanging,
-      playing
+      playing,
+      playLyric,
+      stopLyric
     })
 
     const { cdImageRef, cdClass, cdEndClass } = useCd({ playingEnd, cdRef })
-
-    const { currentLyric, currentLineNum } = useLyric()
 
     // & computed
     const playIcon = computed(() => (playing.value ? 'icon-pause' : 'icon-play'))
@@ -156,6 +177,15 @@ export default {
     // & methods
     const handleMiniClick = () => {
       store.commit(SET_FULL_SCREEN, false)
+    }
+
+    // ! canplay 用于控制歌曲是否能播放
+    const handleAudioCanPlay = () => {
+      if (songReady.value) {
+        return
+      }
+      songReady.value = true
+      playLyric()
     }
 
     return {
@@ -169,9 +199,15 @@ export default {
       toggleFavorite,
       // * hooks audio
       handleAudioPause,
-      handleAudioCanPlay,
       handleAudioError,
       handleAudioTimeUpdate,
+      // * hooks lyric
+      currentLyric,
+      currentLineNum,
+      lyricScrollRef,
+      lyricListRef,
+      pureMusicLyric,
+      playingLyric,
       // * hooks play
       audioRef,
       playBtnRef,
@@ -191,14 +227,12 @@ export default {
       cdRef,
       cdClass,
       cdEndClass,
-      // * hooks lyric
-      currentLyric,
-      currentLineNum,
       // * computed
       playIcon,
       disabledClass,
       // * methods
-      handleMiniClick
+      handleMiniClick,
+      handleAudioCanPlay
     }
   }
 }
@@ -271,7 +305,8 @@ $cdTransformY: var(--cdTransformY, '300px');
       white-space: nowrap;
       font-size: 0;
       .middle-l {
-        display: inline-block;
+        // display: inline-block;
+        display: none;
         vertical-align: top;
         position: relative;
         width: 100%;
@@ -339,6 +374,8 @@ $cdTransformY: var(--cdTransformY, '300px');
             font-size: $font-size-medium;
             &.current {
               color: $color-text;
+              transform: scale(1.3);
+              transition: all 0.2s linear;
             }
           }
           .pure-music {

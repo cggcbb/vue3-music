@@ -6,7 +6,9 @@ export default function useProgress({
   currentSong,
   updateTime,
   progressChanging,
-  playing
+  playing,
+  playLyric,
+  stopLyric
 }) {
   const store = useStore()
 
@@ -14,6 +16,9 @@ export default function useProgress({
   const handleProgressChanging = ({ progress, isProgressChanging }) => {
     updateTime.value = progress * currentSong.value.duration
     progressChanging.value = isProgressChanging
+    // * playLyric 先让歌词滚动到拖动的位置, stopLyric 再暂停歌词播放
+    playLyric()
+    stopLyric()
   }
 
   const handleProgressChanged = ({ progress, isProgressChanging }) => {
@@ -22,6 +27,7 @@ export default function useProgress({
     if (!playing.value) {
       store.commit(SET_PLAYING, true)
     }
+    playLyric()
   }
 
   return {

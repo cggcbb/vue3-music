@@ -4,7 +4,7 @@ import { ref, watch, computed } from 'vue'
 import { formatTime, sleep } from '@/assets/js/util'
 import { PLAY_MODE_LOOP } from '@/assets/js/constant'
 
-export default function usePlay({ songReady, updateTime, manualPause }) {
+export default function usePlay({ songReady, updateTime, manualPause, playLyric, stopLyric }) {
   // & ref
   const audioRef = ref(null)
   const cdRef = ref(null)
@@ -143,9 +143,11 @@ export default function usePlay({ songReady, updateTime, manualPause }) {
     // * 不设置是否手动, 会重复 commit playing
     if (newPlaying) {
       audioElement.play()
+      playLyric()
       manualPause.value = false
     } else {
       audioElement.pause()
+      stopLyric()
       manualPause.value = true
     }
   })

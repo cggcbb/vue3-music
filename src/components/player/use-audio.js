@@ -17,14 +17,6 @@ export default function useAudio() {
     }
   }
 
-  // & canplay 用于控制歌曲是否能播放
-  const handleAudioCanPlay = () => {
-    if (songReady.value) {
-      return
-    }
-    songReady.value = true
-  }
-
   // & 歌曲加载错误的时候, songReady 设置为 true, 防止不能点击上一曲, 下一曲
   const handleAudioError = () => {
     songReady.value = true
@@ -45,7 +37,6 @@ export default function useAudio() {
     progressChanging,
     // * methods
     handleAudioPause,
-    handleAudioCanPlay,
     handleAudioError,
     handleAudioTimeUpdate
   }

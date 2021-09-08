@@ -34,11 +34,18 @@ export const getSongLyric = song => {
     mid
   }).then(result => {
     const lyric = result?.lyric
+    const decodeLyric = decode(lyric)
     // * 新获取的歌词加入缓存
-    if (lyric) {
+    if (lyric && hasLyric(decodeLyric)) {
       lyricStorage[mid] = lyric
       storage.set(LYRIC_KEY, lyricStorage)
     }
-    return lyric ? decode(lyric) : '[00:00:00] 该歌曲暂时无法获取歌词'
+    return lyric ? decodeLyric : '[00:00:00] 该歌曲暂时无法获取歌词'
   })
+}
+
+// * '[00:00:00] 此歌曲为没有填词的纯音乐, 请您欣赏', 类似于这种格式的歌词, 不需要缓存
+const hasLyric = lyric => {
+  const reg = /^\[(\d{2}):(\d{2}):(\d{2})\]/g
+  return !reg.test(lyric)
 }
