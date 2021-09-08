@@ -11,8 +11,13 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
-      <div class="middle">
-        <div class="middle-l">
+      <div
+        class="middle"
+        @touchstart.prevent="onMiddleTouchStart"
+        @touchmove.prevent="onMiddleTouchMove"
+        @touchend.prevent="onMiddleTouchEnd"
+      >
+        <div class="middle-l" :style="middleCdStyle">
           <div class="cd-wrapper">
             <div class="cd" ref="cdRef" :class="cdEndClass">
               <img ref="cdImageRef" class="image" :class="cdClass" :src="currentSong.pic" />
@@ -22,7 +27,7 @@
             <div class="playing-lyric">{{ playingLyric }}</div>
           </div>
         </div>
-        <scroll class="middle-r" ref="lyricScrollRef">
+        <scroll class="middle-r" ref="lyricScrollRef" :style="middleLyricStyle">
           <div class="lyric-wrapper">
             <div v-if="currentLyric" ref="lyricListRef">
               <p
@@ -41,6 +46,18 @@
         </scroll>
       </div>
       <div class="bottom">
+        <div class="dot-wrapper">
+          <span
+            @click="toggleCurrentView(0)"
+            class="dot"
+            :class="{ active: currentShow === 'cd' }"
+          ></span>
+          <span
+            @click="toggleCurrentView(1)"
+            class="dot"
+            :class="{ active: currentShow === 'lyric' }"
+          ></span>
+        </div>
         <div class="progress-wrapper">
           <span class="time time-l">{{ currentTime }}</span>
           <div class="progress-bar-wrapper">
@@ -95,6 +112,7 @@ import usePlay from './use-play'
 import useProgress from './use-progress'
 import useCd from './use-cd'
 import useLyric from './use-lyric'
+import useMiddleInteractive from './use-middle-interactive'
 
 export default {
   name: 'player',
@@ -170,6 +188,16 @@ export default {
 
     const { cdImageRef, cdClass, cdEndClass } = useCd({ playingEnd, cdRef })
 
+    const {
+      currentShow,
+      middleCdStyle,
+      middleLyricStyle,
+      onMiddleTouchStart,
+      onMiddleTouchMove,
+      onMiddleTouchEnd,
+      toggleCurrentView
+    } = useMiddleInteractive()
+
     // & computed
     const playIcon = computed(() => (playing.value ? 'icon-pause' : 'icon-play'))
     const disabledClass = computed(() => (songReady.value && !playingEnd.value ? '' : 'disable'))
@@ -227,6 +255,14 @@ export default {
       cdRef,
       cdClass,
       cdEndClass,
+      // * hooks middle-interactive
+      currentShow,
+      middleCdStyle,
+      middleLyricStyle,
+      onMiddleTouchStart,
+      onMiddleTouchMove,
+      onMiddleTouchEnd,
+      toggleCurrentView,
       // * computed
       playIcon,
       disabledClass,
@@ -305,8 +341,7 @@ $cdTransformY: var(--cdTransformY, '300px');
       white-space: nowrap;
       font-size: 0;
       .middle-l {
-        // display: inline-block;
-        display: none;
+        display: inline-block;
         vertical-align: top;
         position: relative;
         width: 100%;
@@ -394,10 +429,11 @@ $cdTransformY: var(--cdTransformY, '300px');
       .dot-wrapper {
         text-align: center;
         font-size: 0;
+        margin-bottom: 8px;
         .dot {
           display: inline-block;
           vertical-align: middle;
-          margin: 0 4px;
+          margin: 0 6px;
           width: 8px;
           height: 8px;
           border-radius: 50%;
@@ -406,6 +442,7 @@ $cdTransformY: var(--cdTransformY, '300px');
             width: 20px;
             border-radius: 5px;
             background: $color-text-ll;
+            transition: width 0.1s inear;
           }
         }
       }
