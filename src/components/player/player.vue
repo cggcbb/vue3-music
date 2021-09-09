@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-show="playList.length">
     <div class="normal-player" v-show="fullScreen">
       <div class="background">
         <img :src="currentSong.pic" />
@@ -88,6 +88,7 @@
         </div>
       </div>
     </div>
+    <mini-player></mini-player>
     <audio
       ref="audioRef"
       @pause="handleAudioPause"
@@ -102,6 +103,7 @@
 <script>
 import ProgressBar from '@/components/base/progress-bar/progress-bar'
 import Scroll from '@/components/base/scroll/scroll'
+import MiniPlayer from '@/components/mini-player/mini-player'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { SET_FULL_SCREEN } from '@/store/mutation-types'
@@ -118,7 +120,8 @@ export default {
   name: 'player',
   components: {
     ProgressBar,
-    Scroll
+    Scroll,
+    MiniPlayer
   },
   setup() {
     // & vuex
@@ -126,6 +129,7 @@ export default {
 
     const fullScreen = computed(() => store.getters.fullScreen)
     const playing = computed(() => store.getters.playing)
+    const playList = computed(() => store.getters.playList)
 
     // & hooks
     const { playModeIcon, changePlayMode } = useMode()
@@ -219,6 +223,7 @@ export default {
     return {
       //* vuex
       fullScreen,
+      playList,
       // * hooks mode
       playModeIcon,
       changePlayMode,
