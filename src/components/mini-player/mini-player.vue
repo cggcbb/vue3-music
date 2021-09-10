@@ -2,8 +2,14 @@
   <transition name="mini">
     <div class="mini-player" v-show="!fullScreen" @click="showNormalPlayer">
       <div class="cd-wrapper">
-        <div class="cd">
-          <img width="40" height="40" :src="currentSong.pic" />
+        <div class="cd" ref="miniCdRef">
+          <img
+            width="40"
+            height="40"
+            ref="miniCdImageRef"
+            :src="currentSong.pic"
+            :class="miniCdClass"
+          />
         </div>
       </div>
     </div>
@@ -14,6 +20,7 @@
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { SET_FULL_SCREEN } from '@/store/mutation-types'
+import useMiniCd from './use-mini-cd'
 
 export default {
   name: 'mini-player',
@@ -22,6 +29,8 @@ export default {
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
 
+    const { miniCdImageRef, miniCdRef, miniCdClass } = useMiniCd()
+
     const showNormalPlayer = () => {
       store.commit(SET_FULL_SCREEN, true)
     }
@@ -29,7 +38,10 @@ export default {
     return {
       fullScreen,
       currentSong,
-      showNormalPlayer
+      showNormalPlayer,
+      miniCdImageRef,
+      miniCdRef,
+      miniCdClass
     }
   }
 }

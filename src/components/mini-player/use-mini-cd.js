@@ -1,9 +1,10 @@
 import { useStore } from 'vuex'
 import { ref, computed, watch } from 'vue'
 
-export default function useCd({ playingEnd, cdRef }) {
+export default function useCd() {
   // & ref
-  const cdImageRef = ref(null)
+  const miniCdImageRef = ref(null)
+  const miniCdRef = ref(null)
 
   // & vuex
   const store = useStore()
@@ -11,18 +12,14 @@ export default function useCd({ playingEnd, cdRef }) {
   const playing = computed(() => store.getters.playing)
 
   // & computed
-  const cdClass = computed(() => {
+  const miniCdClass = computed(() => {
     return playing.value ? 'playing' : ''
-  })
-
-  const cdEndClass = computed(() => {
-    return playingEnd.value ? 'cd-end' : ''
   })
 
   // & user watcher
   watch(playing, newPlaying => {
     if (!newPlaying) {
-      syncCdWrapperTransform(cdRef.value, cdImageRef.value)
+      syncCdWrapperTransform(miniCdRef.value, miniCdImageRef.value)
     }
   })
 
@@ -39,9 +36,8 @@ export default function useCd({ playingEnd, cdRef }) {
   }
 
   return {
-    cdImageRef,
-    cdRef,
-    cdClass,
-    cdEndClass
+    miniCdImageRef,
+    miniCdRef,
+    miniCdClass
   }
 }
