@@ -1,7 +1,7 @@
 import { useStore } from 'vuex'
 import { ref, computed, watch } from 'vue'
 
-export default function useCd() {
+export default function useMiniCd() {
   // & ref
   const miniCdImageRef = ref(null)
   const miniCdRef = ref(null)
