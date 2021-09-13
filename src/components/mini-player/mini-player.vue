@@ -12,11 +12,20 @@
           />
         </div>
       </div>
+      <div class="slider-wrapper">
+        <div class="slider-group"></div>
+      </div>
+      <div class="control">
+        <progress-circle :radius="32" :progress="progress">
+          <i class="icon-mini" :class="miniPlayIcon" @click.stop="togglePlay"></i>
+        </progress-circle>
+      </div>
     </div>
   </transition>
 </template>
 
 <script>
+import ProgressCircle from '@/components/progress-circle/progress-circle'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { SET_FULL_SCREEN } from '@/store/mutation-types'
@@ -24,10 +33,25 @@ import useMiniCd from './use-mini-cd'
 
 export default {
   name: 'mini-player',
+  components: {
+    ProgressCircle
+  },
+  props: {
+    progress: {
+      type: Number,
+      default: 0
+    },
+    togglePlay: Function
+  },
   setup() {
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
+    const playing = computed(() => store.getters.playing)
+
+    const miniPlayIcon = computed(() => {
+      return playing.value ? 'icon-pause-mini' : 'icon-play-mini'
+    })
 
     const { miniCdImageRef, miniCdRef, miniCdClass } = useMiniCd()
 
@@ -36,12 +60,17 @@ export default {
     }
 
     return {
+      // * vuex
       fullScreen,
       currentSong,
-      showNormalPlayer,
+      // * hooks cd
       miniCdImageRef,
       miniCdRef,
-      miniCdClass
+      miniCdClass,
+      // * computed
+      miniPlayIcon,
+      // * methods
+      showNormalPlayer
     }
   }
 }

@@ -88,7 +88,7 @@
         </div>
       </div>
     </div>
-    <mini-player></mini-player>
+    <mini-player :progress="progress" :togglePlay="togglePlay"></mini-player>
     <audio
       ref="audioRef"
       @pause="handleAudioPause"
