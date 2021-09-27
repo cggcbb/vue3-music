@@ -12,8 +12,12 @@
           />
         </div>
       </div>
-      <div class="slider-wrapper">
-        <div class="slider-group"></div>
+      <div class="slider-wrapper" ref="miniSliderWrapperRef">
+        <div class="slider-group">
+          <div class="slider-page" v-for="song in playList" :key="song.id">
+            <p class="desc">{{ `${song.name} - ${song.singer}` }}</p>
+          </div>
+        </div>
       </div>
       <div class="control">
         <progress-circle :radius="32" :progress="progress">
@@ -30,6 +34,7 @@ import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { SET_FULL_SCREEN } from '@/store/mutation-types'
 import useMiniCd from './use-mini-cd'
+import useMiniSlider from './use-mini-slider'
 
 export default {
   name: 'mini-player',
@@ -48,12 +53,15 @@ export default {
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
     const playing = computed(() => store.getters.playing)
+    const playList = computed(() => store.getters.playList)
 
     const miniPlayIcon = computed(() => {
       return playing.value ? 'icon-pause-mini' : 'icon-play-mini'
     })
 
     const { miniCdImageRef, miniCdRef, miniCdClass } = useMiniCd()
+
+    const { miniSliderWrapperRef } = useMiniSlider()
 
     const showNormalPlayer = () => {
       store.commit(SET_FULL_SCREEN, true)
@@ -63,10 +71,13 @@ export default {
       // * vuex
       fullScreen,
       currentSong,
+      playList,
       // * hooks cd
       miniCdImageRef,
       miniCdRef,
       miniCdClass,
+      // * hooks miniSlider
+      miniSliderWrapperRef,
       // * computed
       miniPlayIcon,
       // * methods
@@ -117,24 +128,27 @@ export default {
       position: relative;
       overflow: hidden;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
       .slider-page {
         display: inline-block;
         width: 100%;
         transform: translate3d(0, 0, 0);
         backface-visibility: hidden;
-        .name {
-          margin-bottom: 2px;
-          @include no-wrap();
-          font-size: $font-size-medium;
-          color: $color-text;
-        }
         .desc {
           @include no-wrap();
           font-size: $font-size-small;
-          color: $color-text-d;
+          color: $color-text;
         }
       }
     }
+  }
+  .playLyric {
+    position: absolute;
+    width: 68%;
+    @include no-wrap();
+    font-size: $font-size-small;
+    color: $color-text;
   }
   .control {
     flex: 0 0 30px;
