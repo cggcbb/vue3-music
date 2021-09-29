@@ -1,7 +1,7 @@
 <template>
   <transition name="mini">
     <div class="mini-player" v-show="!fullScreen" @click="showNormalPlayer">
-      <div class="cd-wrapper">
+      <div class="cd-wrapper" ref="miniCdWrapperRef">
         <div class="cd" ref="miniCdRef">
           <img
             width="40"
@@ -31,10 +31,11 @@
 <script>
 import ProgressCircle from '@/components/progress-circle/progress-circle'
 import { useStore } from 'vuex'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { SET_FULL_SCREEN } from '@/store/mutation-types'
 import useMiniCd from './use-mini-cd'
 import useMiniSlider from './use-mini-slider'
+import { addClass, removeClass } from '@/assets/js/dom'
 
 export default {
   name: 'mini-player',
@@ -46,9 +47,13 @@ export default {
       type: Number,
       default: 0
     },
-    togglePlay: Function
+    togglePlay: Function,
+    // * miniCdWrpper 弹跳
+    bounce: Boolean
   },
-  setup() {
+  setup(props) {
+    const miniCdWrapperRef = ref(null)
+
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
@@ -67,7 +72,20 @@ export default {
       store.commit(SET_FULL_SCREEN, true)
     }
 
+    // & user watcher -> 监听 bounce, 给 miniCdWrapper 添加 'bounce' class, 触发弹跳动画
+    watch(
+      () => props.bounce,
+      newBounce => {
+        if (newBounce) {
+          addClass(miniCdWrapperRef.value, 'bounce')
+        } else {
+          removeClass(miniCdWrapperRef.value, 'bounce')
+        }
+      }
+    )
+
     return {
+      miniCdWrapperRef,
       // * vuex
       fullScreen,
       currentSong,
@@ -103,6 +121,9 @@ export default {
     width: 40px;
     height: 40px;
     padding: 0 10px 0 20px;
+    &.bounce {
+      animation: bounce 2s ease-out;
+    }
     .cd {
       height: 100%;
       width: 100%;
@@ -170,12 +191,32 @@ export default {
   }
   &.mini-enter-active,
   &.mini-leave-active {
-    transition: all 0.6s cubic-bezier(0.45, 0, 0.55, 1);
+    transition: all 0.4s cubic-bezier(0.45, 0, 0.55, 1);
   }
   &.mini-enter-from,
   &.mini-leave-to {
     opacity: 0;
-    transform: translate3d(0, 100%, 0);
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translate3d(0, -20px, 0);
+  }
+  20% {
+    transform: translate3d(0, 0, 0);
+  }
+  40% {
+    transform: translate3d(0, -15px, 0);
+  }
+  60% {
+    transform: translate3d(0, 0, 0);
+  }
+  80% {
+    transform: translate3d(0, -10px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
   }
 }
 </style>
