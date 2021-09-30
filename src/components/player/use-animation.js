@@ -5,7 +5,15 @@ export default function useAnimation() {
   const cdWrapperRef = ref(null)
   const miniImageBounce = ref(false)
 
+  let entering = false
+  let leaving = false
+
   const enter = (el, done) => {
+    if (leaving) {
+      afterLeave()
+    }
+    entering = true
+
     const { x, y, scale } = getPosAndScale()
 
     const animation = {
@@ -33,11 +41,17 @@ export default function useAnimation() {
   }
 
   const afterEnter = () => {
+    entering = false
     createKeyframeAnimation.unregisterAnimation('move')
     cdWrapperRef.value.style.animation = ''
   }
 
   const leave = (el, done) => {
+    if (entering) {
+      afterEnter()
+    }
+    leaving = true
+
     miniImageBounce.value = true
     const cdWrapperEl = cdWrapperRef.value
     cdWrapperEl.style.transition = '.4s'
@@ -53,6 +67,8 @@ export default function useAnimation() {
   }
 
   const afterLeave = () => {
+    leaving = false
+
     const cdWrapperEl = cdWrapperRef.value
     cdWrapperEl.style.transition = ''
     cdWrapperEl.style.transform = ''
