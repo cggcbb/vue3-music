@@ -2,25 +2,30 @@
   <teleport to="body">
     <transition name="list-fade">
       <div class="playlist" v-show="visible && playList.length" @click="hide">
-        <div class="list-wrapper">
+        <div class="list-wrapper" @click.stop>
           <div class="list-header">
             <h1 class="title">
-              <i class="icon" :class="playModeIcon" @click.stop="changePlayMode"></i>
+              <i class="icon" :class="playModeIcon" @click="changePlayMode"></i>
               <span class="text">{{ playModeText }}</span>
             </h1>
           </div>
           <scroll ref="scrollRef" class="list-content">
             <ul ref="listRef">
-              <li class="item" v-for="song in sequenceList" :key="song.id">
+              <li
+                class="item"
+                v-for="song in sequenceList"
+                :key="song.id"
+                @click="selectItem(song)"
+              >
                 <i class="current" :class="getCurrentIcon(song)"></i>
                 <span class="text">{{ song.name }}</span>
-                <span class="favorite" @click.stop="toggleFavorite(song)">
+                <span class="favorite" @click="toggleFavorite(song)">
                   <i :class="getFavoriteIcon(song)"></i>
                 </span>
               </li>
             </ul>
           </scroll>
-          <div class="list-footer">
+          <div class="list-footer" @click="hide">
             <span>关闭</span>
           </div>
         </div>
@@ -31,8 +36,9 @@
 
 <script>
 import Scroll from '@/components/base/scroll/scroll'
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
+import { SET_CURRENT_INDEX, SET_PLAYING } from '@/store/mutation-types'
 import useMode from '../player/use-mode'
 import useFavorite from '../player/use-favorite'
 
@@ -44,6 +50,7 @@ export default {
   setup() {
     const visible = ref(false)
     const scrollRef = ref(null)
+    const listRef = ref(null)
 
     const store = useStore()
     const playList = computed(() => store.getters.playList)
@@ -66,6 +73,7 @@ export default {
 
       await nextTick()
       refreshScroll()
+      scrollToCurrent()
     }
 
     const hide = () => {
@@ -76,9 +84,43 @@ export default {
       scrollRef.value.scroll.refresh()
     }
 
+    // ! 滚动到当前播放歌曲
+    const scrollToCurrent = () => {
+      const index = sequenceList.value.findIndex(song => {
+        return currentSong.value.id === song.id
+      })
+      if (index === -1) {
+        return
+      }
+      const target = listRef.value.children[index]
+
+      scrollRef.value.scroll.scrollToElement(target, 300)
+    }
+
+    // ! 切歌
+    const selectItem = song => {
+      const index = playList.value.findIndex(item => {
+        return song.id === item.id
+      })
+
+      store.commit(SET_CURRENT_INDEX, index)
+      store.commit(SET_PLAYING, true)
+    }
+
+    // & user watcher
+    watch(currentSong, async newSong => {
+      if (!visible.value || !newSong.id) {
+        return
+      }
+      // * currentSong的变化, 可能是因为删除歌曲, dom会发生变化, 这里await nextTick 的目的是确保dom重新渲染之后再执行后续操作
+      await nextTick()
+      scrollToCurrent()
+    })
+
     return {
       visible,
       scrollRef,
+      listRef,
       // * vuex
       playList,
       sequenceList,
@@ -92,7 +134,8 @@ export default {
       // * methods
       getCurrentIcon,
       show,
-      hide
+      hide,
+      selectItem
     }
   }
 }
