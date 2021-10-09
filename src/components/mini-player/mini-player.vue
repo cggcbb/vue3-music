@@ -24,12 +24,17 @@
           <i class="icon-mini" :class="miniPlayIcon" @click.stop="togglePlay"></i>
         </progress-circle>
       </div>
+      <div class="control" @click.stop="showPlayList">
+        <i class="icon-playlist"></i>
+      </div>
+      <play-list ref="playListRef"></play-list>
     </div>
   </transition>
 </template>
 
 <script>
 import ProgressCircle from '@/components/progress-circle/progress-circle'
+import PlayList from '@/components/play-list/play-list'
 import { useStore } from 'vuex'
 import { computed, ref, watch } from 'vue'
 import { SET_FULL_SCREEN } from '@/store/mutation-types'
@@ -40,7 +45,8 @@ import { addClass, removeClass } from '@/assets/js/dom'
 export default {
   name: 'mini-player',
   components: {
-    ProgressCircle
+    ProgressCircle,
+    PlayList
   },
   props: {
     progress: {
@@ -53,6 +59,7 @@ export default {
   },
   setup(props) {
     const miniCdWrapperRef = ref(null)
+    const playListRef = ref(null)
 
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
@@ -72,6 +79,10 @@ export default {
       store.commit(SET_FULL_SCREEN, true)
     }
 
+    const showPlayList = () => {
+      playListRef.value.show()
+    }
+
     // & user watcher -> 监听 bounce, 给 miniCdWrapper 添加 'bounce' class, 触发弹跳动画
     watch(
       () => props.bounce,
@@ -86,6 +97,7 @@ export default {
 
     return {
       miniCdWrapperRef,
+      playListRef,
       // * vuex
       fullScreen,
       currentSong,
@@ -99,7 +111,8 @@ export default {
       // * computed
       miniPlayIcon,
       // * methods
-      showNormalPlayer
+      showNormalPlayer,
+      showPlayList
     }
   }
 }
