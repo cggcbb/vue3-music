@@ -10,7 +10,7 @@
             </h1>
           </div>
           <scroll ref="scrollRef" class="list-content">
-            <ul ref="listRef">
+            <transition-group ref="listRef" name="list" tag="ul">
               <li
                 class="item"
                 v-for="song in sequenceList"
@@ -19,11 +19,14 @@
               >
                 <i class="current" :class="getCurrentIcon(song)"></i>
                 <span class="text">{{ song.name }}</span>
-                <span class="favorite" @click="toggleFavorite(song)">
+                <span class="favorite" @click.stop="toggleFavorite(song)">
                   <i :class="getFavoriteIcon(song)"></i>
                 </span>
+                <span class="delete" @click.stop="removeSong(song)" :class="{ disable: removing }">
+                  <i class="icon-delete"></i>
+                </span>
               </li>
-            </ul>
+            </transition-group>
           </scroll>
           <div class="list-footer" @click="hide">
             <span>关闭</span>
@@ -51,6 +54,7 @@ export default {
     const visible = ref(false)
     const scrollRef = ref(null)
     const listRef = ref(null)
+    const removing = ref(false)
 
     const store = useStore()
     const playList = computed(() => store.getters.playList)
@@ -92,7 +96,7 @@ export default {
       if (index === -1) {
         return
       }
-      const target = listRef.value.children[index]
+      const target = listRef.value.$el.children[index]
 
       scrollRef.value.scroll.scrollToElement(target, 300)
     }
@@ -105,6 +109,20 @@ export default {
 
       store.commit(SET_CURRENT_INDEX, index)
       store.commit(SET_PLAYING, true)
+    }
+
+    const removeSong = song => {
+      if (removing.value) {
+        return
+      }
+      removing.value = true
+      store.dispatch('removeSong', song)
+      if (!playList.value.length) {
+        hide()
+      }
+      setTimeout(() => {
+        removing.value = false
+      }, 300)
     }
 
     // & user watcher
@@ -121,6 +139,7 @@ export default {
       visible,
       scrollRef,
       listRef,
+      removing,
       // * vuex
       playList,
       sequenceList,
@@ -135,7 +154,8 @@ export default {
       getCurrentIcon,
       show,
       hide,
-      selectItem
+      selectItem,
+      removeSong
     }
   }
 }

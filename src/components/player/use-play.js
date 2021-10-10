@@ -89,11 +89,6 @@ export default function usePlay({ songReady, updateTime, manualPause, playLyric,
       index = index < 0 ? list.length - 1 : index
     }
     store.commit(SET_CURRENT_INDEX, index)
-    if (!playing.value) {
-      // * 延迟 600ms 播放
-      await sleep(600)
-      store.commit(SET_PLAYING, true)
-    }
   }
 
   // ! 循环播放, 直接设置 audio 标签的 currentTime = 0
@@ -122,7 +117,7 @@ export default function usePlay({ songReady, updateTime, manualPause, playLyric,
   }
 
   // & user watch
-  watch(currentSong, newSong => {
+  watch(currentSong, async newSong => {
     if (!newSong.id || !newSong.url) {
       return
     }
@@ -132,6 +127,11 @@ export default function usePlay({ songReady, updateTime, manualPause, playLyric,
     const audioElement = audioRef.value
     audioElement.src = newSong.url
     audioElement.play()
+    if (!playing.value) {
+      // * 延迟 600ms 播放
+      await sleep(600)
+      store.commit(SET_PLAYING, true)
+    }
   })
 
   watch(playing, newPlaying => {

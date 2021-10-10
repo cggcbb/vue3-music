@@ -9,7 +9,7 @@ import {
   onDeactivated
 } from 'vue'
 import { useStore } from 'vuex'
-import { SET_CURRENT_INDEX, SET_PLAYING } from '@/store/mutation-types'
+import { SET_CURRENT_INDEX } from '@/store/mutation-types'
 
 import BScroll from '@better-scroll/core'
 import Slide from '@better-scroll/slide'
@@ -24,7 +24,6 @@ export default function useMiniSlider() {
   const fullScreen = computed(() => store.getters.fullScreen)
   const playList = computed(() => store.getters.playList)
   const currentIndex = computed(() => store.getters.currentIndex)
-  const playing = computed(() => store.getters.playing)
 
   const sliderShow = computed(() => {
     return !fullScreen.value && !!playList.value.length
@@ -51,9 +50,6 @@ export default function useMiniSlider() {
             // * mini slider 歌曲切换完之后
             sliderVal.on('slidePageChanged', ({ pageX }) => {
               store.commit(SET_CURRENT_INDEX, pageX)
-              if (!playing.value) {
-                store.commit(SET_PLAYING, true)
-              }
             })
           } else {
             sliderVal.refresh()
@@ -74,6 +70,13 @@ export default function useMiniSlider() {
         nextTick(() => {
           sliderVal.refresh()
         })
+      }
+    })
+
+    watch(playList, async newList => {
+      if (sliderVal && sliderShow.value && newList.length) {
+        await nextTick()
+        sliderVal.refresh()
       }
     })
   })
