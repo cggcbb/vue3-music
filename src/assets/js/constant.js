@@ -2,7 +2,7 @@ export const SINGER_KEY = '__singer__'
 
 export const FAVORITE_KEY = '__favorite__'
 
-export const MODE_KEY = '__MODE__'
+export const MODE_KEY = '__mode__'
 
 export const LYRIC_KEY = '__lyric__'
 
