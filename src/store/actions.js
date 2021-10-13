@@ -2,9 +2,11 @@ import * as types from './mutation-types'
 import { PLAY_MODE_RANDOM } from '@/assets/js/constant'
 import { shuffle } from '@/assets/js/util'
 
+// & 选取一首歌播放
 export const selectPlay = ({ commit, state }, { list, song, index }) => {
   commit(types.SET_SEQUENCE_LIST, list)
   if (state.mode === PLAY_MODE_RANDOM) {
+    // * 随机播放模式需打乱播放列表, 并且需要获取 <当前播放歌曲在随机播放列表里面的索引>
     commit(types.SET_PLAY_LIST, shuffle(list))
     index = state.playList.findIndex(item => item.id === song.id)
   } else {
@@ -25,6 +27,7 @@ export const randomPlay = ({ commit, state }, list) => {
   commit(types.SET_CURRENT_INDEX, 0)
 }
 
+// & 随机播放
 export const changePlayMode = ({ commit, state, getters }, mode) => {
   const currentSongId = getters.currentSong.id
   if (mode === PLAY_MODE_RANDOM) {
@@ -38,7 +41,9 @@ export const changePlayMode = ({ commit, state, getters }, mode) => {
   commit(types.SET_MODE, mode)
 }
 
+// & 删除一首歌
 export const removeSong = ({ commit, state }, song) => {
+  // * 先获取副本, 否则直接修改原数据, vuex会报警告 (不是通过commit mutation)
   const sequenceList = state.sequenceList.slice()
   const playList = state.playList.slice()
 
@@ -47,11 +52,13 @@ export const removeSong = ({ commit, state }, song) => {
   if (sequenceIndex < 0 || playIndex < 0) {
     return
   }
-
+  // * 两个歌曲列表删除对应歌曲
   sequenceList.splice(sequenceIndex, 1)
   playList.splice(playIndex, 1)
 
   let currentIndex = state.currentIndex
+  // * 当删除的歌曲在当前歌曲之前, currentIndex-- , 否则会自动切歌, 因为playList变了
+  // * currentSong获取方式:  currentSong = state => state.playList[state.currentIndex]
   if (playIndex < currentIndex || currentIndex === playList.length) {
     currentIndex--
   }
@@ -62,6 +69,14 @@ export const removeSong = ({ commit, state }, song) => {
   if (!playList.length) {
     commit(types.SET_PLAYING, false)
   }
+}
+
+// & 清空播放列表
+export const clearSongList = ({ commit }) => {
+  commit(types.SET_SEQUENCE_LIST, [])
+  commit(types.SET_PLAY_LIST, [])
+  commit(types.SET_CURRENT_INDEX, 0)
+  commit(types.SET_PLAYING, false)
 }
 
 function findIndex(list, song) {

@@ -7,6 +7,9 @@
             <h1 class="title">
               <i class="icon" :class="playModeIcon" @click="changePlayMode"></i>
               <span class="text">{{ playModeText }}</span>
+              <span class="clear" @click="showConfirm">
+                <i class="icon-clear"></i>
+              </span>
             </h1>
           </div>
           <scroll ref="scrollRef" class="list-content">
@@ -32,6 +35,12 @@
             <span>关闭</span>
           </div>
         </div>
+        <confirm
+          ref="confirmRef"
+          @confirm="confirmClear"
+          text="是否清空播放列表？"
+          confirm-btn-text="清空"
+        ></confirm>
       </div>
     </transition>
   </teleport>
@@ -39,16 +48,19 @@
 
 <script>
 import Scroll from '@/components/base/scroll/scroll'
+import Confirm from '@/components/base/confirm/confirm'
 import { ref, computed, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
 import { SET_CURRENT_INDEX, SET_PLAYING } from '@/store/mutation-types'
 import useMode from '../player/use-mode'
 import useFavorite from '../player/use-favorite'
+import useConfirm from './use-confirm'
 
 export default {
   name: 'play-list',
   components: {
-    Scroll
+    Scroll,
+    Confirm
   },
   setup() {
     const visible = ref(false)
@@ -64,6 +76,7 @@ export default {
     // & hooks
     const { playModeIcon, playModeText, changePlayMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
+    const { confirmRef, showConfirm, confirmClear } = useConfirm({ hide })
 
     // & methods
     const getCurrentIcon = song => {
@@ -80,7 +93,7 @@ export default {
       scrollToCurrent()
     }
 
-    const hide = () => {
+    function hide() {
       visible.value = false
     }
 
@@ -140,6 +153,7 @@ export default {
       scrollRef,
       listRef,
       removing,
+      confirmRef,
       // * vuex
       playList,
       sequenceList,
@@ -155,7 +169,9 @@ export default {
       show,
       hide,
       selectItem,
-      removeSong
+      removeSong,
+      showConfirm,
+      confirmClear
     }
   }
 }
