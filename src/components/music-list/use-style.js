@@ -1,4 +1,5 @@
 import { onMounted, computed, ref } from 'vue'
+import { useStore } from 'vuex'
 
 // * title 高度
 const TITLE_HEIGHT = 40
@@ -7,6 +8,9 @@ export default function useStyle(props, scrollY) {
   const bgImage = ref(null)
   const maxTranslateY = ref(0)
   const picHeight = ref(0)
+
+  const store = useStore()
+  const playList = computed(() => store.getters.playList)
 
   // & 获取头像背景图片高度 (用于设置 scroll-list 的top值)
   onMounted(() => {
@@ -49,8 +53,10 @@ export default function useStyle(props, scrollY) {
 
   // & 动态计算scroll style ( 设置top 绝对定位的top值, 让歌手背景图片显示出来 )
   const scrollStyle = computed(() => {
+    const bottom = playList.value.length ? '60px' : '0'
     return {
-      top: `${picHeight.value}px`
+      top: `${picHeight.value}px`,
+      bottom
     }
   })
 
