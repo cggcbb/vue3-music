@@ -3,7 +3,7 @@
     <singer-list :data="singers" v-loading="!singers.length" @singerSelect="handleSingerSelect" />
     <router-view v-slot="{ Component }">
       <transition appear name="slide">
-        <component :is="Component" :singer="selecedSinger"></component>
+        <component :is="Component" :data="selecedSinger"></component>
       </transition>
     </router-view>
   </div>
