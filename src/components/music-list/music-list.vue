@@ -30,7 +30,7 @@
 
 <script>
 import SongList from '@/components/base/song-list/song-list'
-import Scroll from '@/components/base/scroll/scroll'
+import Scroll from '@/components/high-scroll'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useStyle from './use-style'

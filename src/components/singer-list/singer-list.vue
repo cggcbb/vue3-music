@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll/scroll'
+import Scroll from '@/components/high-scroll'
 import useFixedTitle from './use-fixed-title'
 import useShortCut from './use-short-cut'
 
