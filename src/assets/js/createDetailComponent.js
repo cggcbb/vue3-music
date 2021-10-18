@@ -33,9 +33,7 @@ export default function createDetailComponent({ name, cacheKey, fetch }) {
         }
         pureData.value = _computedData
         const result = await fetch(pureData.value)
-        if (result?.length) {
-          songs.value = await processSongPureUrl(result.songs)
-        }
+        songs.value = await processSongPureUrl(result.songs)
         loading.value = false
       })
 
