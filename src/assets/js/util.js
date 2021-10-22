@@ -28,4 +28,17 @@ export const formatTime = interval => {
   return `${minute}:${second}`
 }
 
+// & 简易防抖函数
+export const debounce = (cb, delay) => {
+  let timer = null
+  return function(...args) {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      cb.apply(this, args)
+    }, delay)
+  }
+}
+
 export const sleep = delay => new Promise(resolve => setTimeout(resolve, delay))
