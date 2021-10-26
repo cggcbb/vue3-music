@@ -158,6 +158,7 @@ function normalizeSingers(singers) {
 function createSinger(singer) {
   return new Singer(singer)
 }
+
 class Singer {
   constructor(singer) {
     this.id = singer.singer_id
