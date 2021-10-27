@@ -2,7 +2,7 @@
   <div class="rank-list" v-loading="loading">
     <scroll class="rank-list-content">
       <ul>
-        <li class="item" v-for="item in rankList" :key="item.id">
+        <li class="item" v-for="item in rankList" :key="item.id" @click="selectItem(item)">
           <div class="icon">
             <img width="100" height="100" v-lazy="item.pic" />
           </div>
@@ -31,16 +31,23 @@ export default {
   setup() {
     const loading = ref(true)
     const rankList = ref([])
+    const selectedRisk = ref(null)
 
     onBeforeMount(async () => {
       // * 获取排行榜列表数据
       const result = await getRankList()
-      console.log(result)
+      rankList.value = result.rankList
+      loading.value = false
     })
+
+    const selectItem = risk => {
+      selectedRisk.value = risk
+    }
 
     return {
       loading,
-      rankList
+      rankList,
+      selectItem
     }
   }
 }

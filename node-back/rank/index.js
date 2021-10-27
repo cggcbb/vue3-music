@@ -1,8 +1,8 @@
-const { get } = require('../request.js')
-const { getRandomVal } = require('../utils.js')
-const getSecuritySign = require('../sign.js')
+const { get } = require('../request')
+const { getRandomVal } = require('../utils')
+const getSecuritySign = require('../sign')
 // * 响应成功code
-const { CODE_OK } = require('../common/index.js')
+const { CODE_OK } = require('../common')
 
 // & 获取排行榜接口
 function registerRankList(app) {
@@ -24,12 +24,12 @@ function registerRankList(app) {
     }).then(response => {
       const data = response.data
       if (data.code === CODE_OK) {
-        const topList = []
+        const rankList = []
         const group = data.toplist.data.group
 
         group.forEach(item => {
           item.toplist.forEach(listItem => {
-            topList.push({
+            rankList.push({
               id: listItem.topId,
               pic: listItem.frontPicUrl,
               name: listItem.title,
@@ -48,7 +48,7 @@ function registerRankList(app) {
         res.json({
           code: CODE_OK,
           result: {
-            topList
+            rankList
           }
         })
       } else {
