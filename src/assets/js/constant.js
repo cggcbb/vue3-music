@@ -8,6 +8,8 @@ export const LYRIC_KEY = '__lyric__'
 
 export const ALBUM_KEY = '__album__'
 
+export const RANK_KEY = '__rank__'
+
 export const PLAY_MODE_SEQUENCE = 0
 
 export const PLAY_MODE_LOOP = 1

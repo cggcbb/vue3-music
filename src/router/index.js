@@ -6,6 +6,7 @@ const Rank = () => import(/* webpackChunkName: "rank" */ '@/views/rank')
 const Search = () => import(/* webpackChunkName: "search" */ '@/views/search')
 const SingerDetail = () => import(/* webpackChunkName: "singerDetail" */ '@/views/singer-detail')
 const Album = () => import(/* webpackChunkName: "album" */ '@/views/album')
+const rankDetail = () => import(/* webpackChunkName: "rank-detail" */ '@/views/rank-detail')
 
 const routes = [
   {
@@ -34,7 +35,13 @@ const routes = [
   },
   {
     path: '/rank',
-    component: Rank
+    component: Rank,
+    children: [
+      {
+        path: ':id',
+        component: rankDetail
+      }
+    ]
   },
   {
     path: '/search',

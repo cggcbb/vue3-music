@@ -2,7 +2,7 @@
   <div class="rank-list" v-loading="loading">
     <scroll class="rank-list-content">
       <ul>
-        <li class="item" v-for="item in rankList" :key="item.id" @click="selectItem(item)">
+        <li class="item" v-for="item in rankList" :key="item.id" @click="selectRankItem(item)">
           <div class="icon">
             <img width="100" height="100" v-lazy="item.pic" />
           </div>
@@ -15,13 +15,21 @@
         </li>
       </ul>
     </scroll>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :data="selectedRank"></component>
+      </transition>
+    </router-view>
   </div>
 </template>
 
 <script>
 import Scroll from '@/components/high-scroll'
-import { getRankList } from '@/service/rank-list'
+import storage from 'good-storage'
+import { getRankList } from '@/service/rank'
 import { ref, onBeforeMount } from 'vue'
+import { RANK_KEY } from '@/assets/js/constant'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'rank-list',
@@ -31,7 +39,9 @@ export default {
   setup() {
     const loading = ref(true)
     const rankList = ref([])
-    const selectedRisk = ref(null)
+    const selectedRank = ref(null)
+
+    const router = useRouter()
 
     onBeforeMount(async () => {
       // * 获取排行榜列表数据
@@ -40,14 +50,22 @@ export default {
       loading.value = false
     })
 
-    const selectItem = risk => {
-      selectedRisk.value = risk
+    const selectRankItem = rank => {
+      selectedRank.value = rank
+      cacheRank(rank)
+      router.push({
+        path: `/rank/${rank.id}`
+      })
+    }
+
+    const cacheRank = rank => {
+      storage.session.set(RANK_KEY, rank)
     }
 
     return {
       loading,
       rankList,
-      selectItem
+      selectRankItem
     }
   }
 }
