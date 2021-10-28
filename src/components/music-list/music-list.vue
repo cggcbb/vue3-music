@@ -22,7 +22,7 @@
       @scroll="handleScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs" @selectSongItem="handleSelectSongItem"></song-list>
+        <song-list :songs="songs" @selectSongItem="handleSelectSongItem" :rank="rank"></song-list>
       </div>
     </scroll>
   </div>
@@ -53,6 +53,10 @@ export default {
     emptyText: {
       type: String,
       default: '抱歉，暂未搜索到相关内容'
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
