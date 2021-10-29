@@ -1,6 +1,5 @@
+const token = require('./common')
 const axios = require('axios')
-
-const token = 5381
 
 //* 公共参数
 const commonParams = {

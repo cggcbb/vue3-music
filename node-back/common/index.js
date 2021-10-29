@@ -52,7 +52,10 @@ function mergeSinger(singer) {
   return ret.join('/')
 }
 
+const token = 5381
+
 module.exports = {
   CODE_OK: 0,
-  handleSongList
+  handleSongList,
+  token
 }
