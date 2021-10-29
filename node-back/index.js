@@ -6,6 +6,7 @@ const registerLyric = require('./lyric')
 const registerAlbum = require('./album')
 const registerRankList = require('./rank')
 const registerRankDetail = require('./rank-detail')
+const registerHotKeys = require('./hot-key')
 
 //& 注册后端路由
 function registerRouter(app) {
@@ -24,6 +25,8 @@ function registerRouter(app) {
   registerRankList(app)
 
   registerRankDetail(app)
+
+  registerHotKeys(app)
 }
 
 module.exports = registerRouter
