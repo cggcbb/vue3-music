@@ -14,6 +14,11 @@ export const remove = (key, compareFn) => {
   return items
 }
 
+export const clear = key => {
+  storage.remove(key)
+  return []
+}
+
 export const insertArray = (arr, value, compareFn, maxLength) => {
   if (~arr.findIndex(compareFn)) {
     return
