@@ -8,7 +8,7 @@
         <div class="hot-keys">
           <h1 class="title">热门搜索</h1>
           <ul>
-            <li class="item" v-for="item in hotKeys" :key="item.id">
+            <li class="item" v-for="item in hotKeys" :key="item.id" @click="addQuery(item.key)">
               <span>{{ item.key }}</span>
             </li>
           </ul>
@@ -16,10 +16,22 @@
         <div class="search-history">
           <h1 class="title">
             <span class="text">搜索历史</span>
-            <span class="clear">
+            <span class="clear" @click="showConfirm">
               <i class="icon-clear"></i>
             </span>
           </h1>
+          <confirm
+            ref="confirmRef"
+            text="是否清空所有搜索历史"
+            confirm-btn-text="清空"
+            @confirm="clearSearch"
+          >
+          </confirm>
+          <search-list
+            :searches="searchHistory"
+            @select="addQuery"
+            @delete="deleteSearch"
+          ></search-list>
         </div>
       </div>
     </scroll>
@@ -28,31 +40,58 @@
 </template>
 
 <script>
-import SearchInput from '@/components/base/search-input/search-input'
+import SearchInput from '@/components/search/search-input'
 import Scroll from '@/components/high-scroll'
-import { ref, onBeforeMount } from 'vue'
+import Confirm from '@/components/base/confirm/confirm'
+import useSearchHistory from '@/components/search/use-search-history'
+import { ref, onBeforeMount, computed } from 'vue'
 import { getHotKeys } from '@/service/search'
+import { useStore } from 'vuex'
 
 export default {
   name: 'search',
   components: {
     SearchInput,
-    Scroll
+    Scroll,
+    Confirm
   },
   setup() {
     const query = ref('')
     const scrollRef = ref(null)
     const hotKeys = ref([])
+    const confirmRef = ref(null)
 
     onBeforeMount(async () => {
       const result = await getHotKeys()
       hotKeys.value = result.hotKeys
     })
 
+    const store = useStore()
+    const searchHistory = computed(() => store.getters.searchHistory)
+
+    const { deleteSearch, clearSearch } = useSearchHistory()
+
+    const showConfirm = () => {
+      confirmRef.value.show()
+    }
+
+    const addQuery = query => {
+      query.value = query
+    }
+
     return {
+      confirmRef,
       query,
       scrollRef,
-      hotKeys
+      hotKeys,
+      // * vuex
+      searchHistory,
+      // * hooks searchHistory
+      deleteSearch,
+      clearSearch,
+      // * methods
+      showConfirm,
+      addQuery
     }
   }
 }
