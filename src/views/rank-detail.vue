@@ -1,5 +1,12 @@
 <template>
-  <div class="rank-detail">
+  <div
+    class="rank-detail"
+    @touchstart="onDetailTouchStart"
+    @touchmove="onDetailTouchMove"
+    @touchend="onDetailTouchEnd"
+    :style="detailStyle"
+    ref="detailRef"
+  >
     <music-list :songs="songs" :title="title" :pic="pic" :loading="loading" rank></music-list>
   </div>
 </template>
