@@ -23,11 +23,20 @@ export default {
   setup(props, { emit }) {
     const queryVal = ref(props.query)
 
+    // & 监听内部query变化的值, 派发update函数
     watch(
       queryVal,
       debounce(newQuery => {
         emit('update:query', newQuery.trim())
       }, 300)
+    )
+
+    // & 监听外部传入的query值
+    watch(
+      () => props.query,
+      newQuery => {
+        queryVal.value = newQuery
+      }
     )
 
     const clear = () => {
