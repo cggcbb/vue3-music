@@ -1,7 +1,7 @@
 <template>
   <div class="search">
     <div class="search-input-wrapper">
-      <search-input v-model="query"></search-input>
+      <search-input v-model:query="query"></search-input>
     </div>
     <scroll ref="scrollRef" class="search-content" v-show="!query">
       <div>
@@ -27,11 +27,6 @@
             @confirm="clearSearch"
           >
           </confirm>
-          <search-list
-            :searches="searchHistory"
-            @select="addQuery"
-            @delete="deleteSearch"
-          ></search-list>
         </div>
       </div>
     </scroll>
@@ -44,7 +39,7 @@ import SearchInput from '@/components/search/search-input'
 import Scroll from '@/components/high-scroll'
 import Confirm from '@/components/base/confirm/confirm'
 import useSearchHistory from '@/components/search/use-search-history'
-import { ref, onBeforeMount, computed } from 'vue'
+import { ref, onBeforeMount, computed, watch } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
 
@@ -75,9 +70,9 @@ export default {
       confirmRef.value.show()
     }
 
-    const addQuery = query => {
-      query.value = query
-    }
+    watch(query, newQuery => {
+      console.log(newQuery)
+    })
 
     return {
       confirmRef,
@@ -90,8 +85,7 @@ export default {
       deleteSearch,
       clearSearch,
       // * methods
-      showConfirm,
-      addQuery
+      showConfirm
     }
   }
 }

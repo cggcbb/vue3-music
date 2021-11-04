@@ -65,6 +65,7 @@ export default {
     return {
       loading,
       rankList,
+      selectedRank,
       selectRankItem
     }
   }
