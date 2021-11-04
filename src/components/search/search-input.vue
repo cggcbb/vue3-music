@@ -1,8 +1,8 @@
 <template>
   <div class="search-input">
     <i class="icon-search"></i>
-    <input class="input-inner" v-model="query" :placeholder="placeholder" />
-    <i v-show="query" class="icon-dismiss" @click="clear"></i>
+    <input class="input-inner" v-model="queryVal" :placeholder="placeholder" />
+    <i v-show="queryVal" class="icon-dismiss" @click="clear"></i>
   </div>
 </template>
 
@@ -13,36 +13,29 @@ import { ref, watch } from 'vue'
 export default {
   name: 'search-input',
   props: {
-    modelValue: String,
+    query: String,
     placeholder: {
       type: String,
       default: '搜索歌曲、歌手'
     }
   },
-  emits: ['update:modelValue'],
+  emits: ['update:query'],
   setup(props, { emit }) {
-    const query = ref(props.modelValue)
+    const queryVal = ref(props.query)
 
     watch(
-      query,
+      queryVal,
       debounce(newQuery => {
-        emit('update:modelValue', newQuery.trim())
+        emit('update:query', newQuery.trim())
       }, 300)
     )
 
-    watch(
-      () => props.modelValue,
-      newVal => {
-        query.value = newVal
-      }
-    )
-
     const clear = () => {
-      query.value = ''
+      queryVal.value = ''
     }
 
     return {
-      query,
+      queryVal,
       clear
     }
   }
