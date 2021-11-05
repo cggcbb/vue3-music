@@ -30,7 +30,11 @@
         </div>
       </div>
     </scroll>
-    <div class="search-result"></div>
+    <div class="search-result" v-show="query">
+      <suggest :query="query"></suggest>
+    </div>
+
+    <message ref="messageRef" type="warn" :delay="3000" text="暂无搜索历史"></message>
   </div>
 </template>
 
@@ -38,6 +42,8 @@
 import SearchInput from '@/components/search/search-input'
 import Scroll from '@/components/high-scroll'
 import Confirm from '@/components/base/confirm/confirm'
+import Message from '@/components/base/message/message'
+import Suggest from '@/components/search/suggest'
 import useSearchHistory from '@/components/search/use-search-history'
 import { ref, onBeforeMount, computed, watch } from 'vue'
 import { getHotKeys } from '@/service/search'
@@ -48,13 +54,16 @@ export default {
   components: {
     SearchInput,
     Scroll,
-    Confirm
+    Confirm,
+    Message,
+    Suggest
   },
   setup() {
     const query = ref('')
     const scrollRef = ref(null)
     const hotKeys = ref([])
     const confirmRef = ref(null)
+    const messageRef = ref(null)
 
     onBeforeMount(async () => {
       const result = await getHotKeys()
@@ -67,6 +76,10 @@ export default {
     const { deleteSearch, clearSearch } = useSearchHistory()
 
     const showConfirm = () => {
+      if (!searchHistory.value.length) {
+        messageRef.value.show()
+        return
+      }
       confirmRef.value.show()
     }
 
@@ -76,6 +89,7 @@ export default {
 
     return {
       confirmRef,
+      messageRef,
       query,
       scrollRef,
       hotKeys,
