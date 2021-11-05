@@ -17,7 +17,7 @@ export const processSongPureUrl = songs => {
         return song
       })
       .filter(song => {
-        return song.url.includes('vkey')
+        return song.url?.includes('vkey')
       })
   })
 }
