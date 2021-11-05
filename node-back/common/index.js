@@ -3,8 +3,9 @@ function handleSongList(list) {
   const songList = []
 
   list.forEach(item => {
-    const info = item.songInfo || item
-    if (info.pay.pay_play !== 0 || !info.interval) {
+    const info = item.songInfo ?? item
+    const payPlay = info.pay.pay_play ?? info.pay.payplay
+    if (payPlay !== 0 || !info.interval) {
       //* 过滤付费歌曲和获取不到时长的歌曲
       return
     }
@@ -27,16 +28,18 @@ function createSong(song) {
 
 class Song {
   constructor(song) {
-    this.id = song.id
-    this.mid = song.mid
-    this.name = song.name
+    this.id = song.id ?? song.songid
+    this.mid = song.mid ?? song.songmid
+    this.name = song.name ?? song.songname
     this.singer = mergeSinger(song.singer)
     this.url = '' //* 可能第三方接口保护, 这里获取不到播放地址url, 需从另一个接口获取
     this.duration = song.interval
-    this.pic = song.album.mid
-      ? `https://y.gtimg.cn/music/photo_new/T002R800x800M000${song.album.mid}.jpg?max_age=2592000`
-      : fallbackPicUrl
-    this.album = song.album.name
+    this.pic =
+      song.album?.mid ?? song.albummid
+        ? `https://y.gtimg.cn/music/photo_new/T002R800x800M000${song.album?.mid ||
+            song.albummid}.jpg?max_age=2592000`
+        : fallbackPicUrl
+    this.album = song.album?.name ?? song.albumname
   }
 }
 
