@@ -21,10 +21,17 @@ export default function createDirective(Component) {
       }
       el[name].instance = instance
 
-      // * 添加文案
-      const message = binding.arg
-      if (message) {
-        instance.setMessage(message)
+      // * 添加文案 及 修改 loading 组件的宽高
+      const args = binding.arg
+      if (typeof args === 'string') {
+        args !== undefined && instance.setMessage(args)
+      } else {
+        if (args !== undefined) {
+          const { width, height, message } = args
+          message !== undefined && instance.setMessage(message)
+          width && instance.setWidth(width)
+          height && instance.setHeight(height)
+        }
       }
 
       if (binding.value) {
@@ -33,10 +40,15 @@ export default function createDirective(Component) {
     },
     updated(el, binding) {
       // * 修改文案
-      const message = binding.arg
+      const args = binding.arg
 
-      if (message) {
-        el[name].instance.setMessage(message)
+      if (typeof args === 'string') {
+        args !== undefined && el[name].instance.setMessage(args)
+      } else {
+        if (args !== undefined) {
+          const { message } = args
+          message !== undefined && el[name].instance.setMessage(message)
+        }
       }
 
       if (binding.value !== binding.oldValue) {

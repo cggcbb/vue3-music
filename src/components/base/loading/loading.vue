@@ -1,6 +1,11 @@
 <template>
   <div class="loading-wrapper">
-    <svg :width="width" :height="height" viewBox="0 0 50 50" preserveAspectRatio="xMidYMid meet">
+    <svg
+      :width="realWidth"
+      :height="realHeight"
+      viewBox="0 0 50 50"
+      preserveAspectRatio="xMidYMid meet"
+    >
       <circle
         cx="25"
         cy="25"
@@ -133,10 +138,20 @@ export default {
     }
 
     const loadingMessage = ref('Loading ...')
+    const realWidth = ref(ctx.width)
+    const realHeight = ref(ctx.height)
 
     //* 对loading directive提供的内部方法, 来动态修改loadingMessage的值
     const setMessage = message => {
       loadingMessage.value = message
+    }
+
+    const setWidth = width => {
+      realWidth.value = width
+    }
+
+    const setHeight = height => {
+      realHeight.value = height
     }
 
     return {
@@ -145,7 +160,11 @@ export default {
       outSideStrokeDasharray,
       inSideStrokeDasharray,
       loadingMessage,
-      setMessage
+      setMessage,
+      setWidth,
+      setHeight,
+      realWidth,
+      realHeight
     }
   }
 }
