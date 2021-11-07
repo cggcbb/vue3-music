@@ -27,14 +27,23 @@
             @confirm="clearSearch"
           >
           </confirm>
+          <search-list
+            :searches="searchHistory"
+            @select="addQuery"
+            @delete="deleteSearch"
+          ></search-list>
         </div>
       </div>
     </scroll>
     <div class="search-result" v-show="query">
-      <suggest :query="query"></suggest>
+      <suggest :query="query" @select-song="selectSong" @select-singer="selectSinger"></suggest>
     </div>
-
-    <message ref="messageRef" type="warn" :delay="3000" text="暂无搜索历史"></message>
+    <message ref="messageRef" type="warn" :delay="2000" text="暂无搜索历史"></message>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :data="selectedSinger"></component>
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -45,9 +54,13 @@ import Confirm from '@/components/base/confirm/confirm'
 import Message from '@/components/base/message/message'
 import Suggest from '@/components/search/suggest'
 import useSearchHistory from '@/components/search/use-search-history'
-import { ref, onBeforeMount, computed, watch } from 'vue'
+import SearchList from '@/components/base/search-list/search-list'
+import storage from 'good-storage'
+import { ref, onBeforeMount, computed, watch, nextTick } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
+import { SINGER_KEY } from '@/assets/js/constant'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'search',
@@ -56,7 +69,8 @@ export default {
     Scroll,
     Confirm,
     Message,
-    Suggest
+    Suggest,
+    SearchList
   },
   setup() {
     const query = ref('')
@@ -64,6 +78,9 @@ export default {
     const hotKeys = ref([])
     const confirmRef = ref(null)
     const messageRef = ref(null)
+    const selectedSinger = ref(null)
+
+    const router = useRouter()
 
     onBeforeMount(async () => {
       const result = await getHotKeys()
@@ -73,19 +90,52 @@ export default {
     const store = useStore()
     const searchHistory = computed(() => store.getters.searchHistory)
 
-    const { deleteSearch, clearSearch } = useSearchHistory()
+    const { saveSearch, deleteSearch, clearSearch } = useSearchHistory()
 
+    // & 删除搜索历史弹窗
     const showConfirm = () => {
       if (!searchHistory.value.length) {
+        // * 无搜索历史, 提示message
         messageRef.value.show()
         return
       }
       confirmRef.value.show()
     }
 
-    watch(query, newQuery => {
-      console.log(newQuery)
+    const addQuery = newQuery => {
+      query.value = newQuery.trim()
+    }
+
+    const selectSinger = singer => {
+      saveSearch(query.value)
+      selectedSinger.value = singer
+      cacheSingerToSessionStorage(singer)
+
+      router.push({
+        path: `/search/${singer.mid}`
+      })
+    }
+
+    const selectSong = song => {
+      saveSearch(query.value)
+      store.dispatch('addSong', song)
+    }
+
+    // & 缓存singer 至 sessionStorage  (页面刷新使用)
+    const cacheSingerToSessionStorage = singer => {
+      storage.session.set(SINGER_KEY, singer)
+    }
+
+    watch(query, async newQuery => {
+      if (!newQuery) {
+        await nextTick()
+        refreshScroll()
+      }
     })
+
+    function refreshScroll() {
+      scrollRef.value.scroll.refresh()
+    }
 
     return {
       confirmRef,
@@ -93,13 +143,17 @@ export default {
       query,
       scrollRef,
       hotKeys,
+      selectedSinger,
       // * vuex
       searchHistory,
       // * hooks searchHistory
       deleteSearch,
       clearSearch,
       // * methods
-      showConfirm
+      showConfirm,
+      addQuery,
+      selectSong,
+      selectSinger
     }
   }
 }
