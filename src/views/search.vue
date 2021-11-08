@@ -107,7 +107,7 @@ export default {
     }
 
     const selectSinger = singer => {
-      saveSearch(query.value)
+      saveSearch(query.value.trim())
       selectedSinger.value = singer
       cacheSingerToSessionStorage(singer)
 
@@ -117,7 +117,7 @@ export default {
     }
 
     const selectSong = song => {
-      saveSearch(query.value)
+      saveSearch(query.value.trim())
       store.dispatch('addSong', song)
     }
 
@@ -126,6 +126,7 @@ export default {
       storage.session.set(SINGER_KEY, singer)
     }
 
+    // & 清空搜索列表 刷新scroll, 以达到能滚动的目的
     watch(query, async newQuery => {
       if (!newQuery) {
         await nextTick()

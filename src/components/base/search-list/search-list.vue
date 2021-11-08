@@ -1,5 +1,5 @@
 <template>
-  <div class="search-list">
+  <div class="search-list" v-empty="">
     <transition-group name="list" tag="ul">
       <li v-for="item in searches" :key="item" class="search-item" @click="selectItem(item)">
         <span class="text">{{ item }}</span>
@@ -27,12 +27,18 @@ export default {
     }
   },
   emits: ['select', 'delete'],
-  methods: {
-    selectItem(item) {
-      this.$emit('select', item)
-    },
-    deleteItem(item) {
-      this.$emit('delete', item)
+  setup(props, { emit }) {
+    const selectItem = item => {
+      emit('select', item)
+    }
+
+    const deleteItem = item => {
+      emit('delete', item)
+    }
+
+    return {
+      selectItem,
+      deleteItem
     }
   }
 }
