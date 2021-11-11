@@ -18,7 +18,7 @@ export const selectPlay = ({ commit, state }, { list, song, index }) => {
   commit(types.SET_CURRENT_INDEX, index)
 }
 
-export const randomPlay = ({ commit, state }, list) => {
+export const randomPlay = ({ commit }, list) => {
   commit(types.SET_SEQUENCE_LIST, list)
   commit(types.SET_PLAY_LIST, shuffle(list))
   commit(types.SET_MODE, PLAY_MODE_RANDOM)

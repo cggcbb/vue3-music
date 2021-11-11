@@ -1,4 +1,4 @@
-import { MODE_KEY, FAVORITE_KEY, SEARCH_KEY } from '@/assets/js/constant'
+import { MODE_KEY, FAVORITE_KEY, SEARCH_KEY, PLAY_KEY } from '@/assets/js/constant'
 import { loadStorage } from '@/assets/js/array-storage'
 
 const state = {
@@ -9,7 +9,8 @@ const state = {
   fullScreen: false, // * 全屏(默认不全屏)
   currentIndex: -1, // * 当前播放歌曲index
   favoriteList: loadStorage(FAVORITE_KEY), // * 收藏歌曲列表, 本地storage加载
-  searchHistory: loadStorage(SEARCH_KEY)
+  searchHistory: loadStorage(SEARCH_KEY), // * 搜索历史
+  playHistory: loadStorage(PLAY_KEY) // * 最近播放历史
 }
 
 export default state

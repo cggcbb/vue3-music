@@ -15,3 +15,5 @@ export const currentSong = state => state.playList[state.currentIndex] || {}
 export const favoriteList = state => state.favoriteList
 
 export const searchHistory = state => state.searchHistory
+
+export const playHistory = state => state.playHistory
