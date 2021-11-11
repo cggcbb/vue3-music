@@ -1,4 +1,4 @@
-<template>
+fjsdklfsdjf<template>
   <teleport to="body">
     <transition name="list-fade">
       <div class="playlist" v-show="visible && playList.length" @click="hide">
@@ -31,6 +31,12 @@
               </li>
             </transition-group>
           </scroll>
+          <div class="list-add">
+            <div class="add" @click="showAddSong">
+              <i class="icon-add"></i>
+              <span class="text">添加歌曲到队列</span>
+            </div>
+          </div>
           <div class="list-footer" @click="hide">
             <span>关闭</span>
           </div>
@@ -40,7 +46,8 @@
           @confirm="confirmClear"
           text="是否清空播放列表？"
           confirm-btn-text="清空"
-        ></confirm>
+        />
+        <add-song ref="addSongRef" />
       </div>
     </transition>
   </teleport>
@@ -49,6 +56,7 @@
 <script>
 import Scroll from '@/components/base/scroll/scroll'
 import Confirm from '@/components/base/confirm/confirm'
+import AddSong from '@/components/add-song/add-song'
 import { ref, computed, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
 import { SET_CURRENT_INDEX, SET_PLAYING } from '@/store/mutation-types'
@@ -60,13 +68,15 @@ export default {
   name: 'play-list',
   components: {
     Scroll,
-    Confirm
+    Confirm,
+    AddSong
   },
   setup() {
     const visible = ref(false)
     const scrollRef = ref(null)
     const listRef = ref(null)
     const removing = ref(false)
+    const addSongRef = ref(null)
 
     const store = useStore()
     const playList = computed(() => store.getters.playList)
@@ -138,6 +148,10 @@ export default {
       }, 300)
     }
 
+    const showAddSong = () => {
+      addSongRef.value.show()
+    }
+
     // & user watcher
     watch(currentSong, async newSong => {
       if (!visible.value || !newSong.id) {
@@ -154,6 +168,7 @@ export default {
       listRef,
       removing,
       confirmRef,
+      addSongRef,
       // * vuex
       playList,
       sequenceList,
@@ -171,7 +186,8 @@ export default {
       selectItem,
       removeSong,
       showConfirm,
-      confirmClear
+      confirmClear,
+      showAddSong
     }
   }
 }
