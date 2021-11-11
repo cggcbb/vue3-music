@@ -12,6 +12,8 @@ export const RANK_KEY = '__rank__'
 
 export const SEARCH_KEY = '__search__'
 
+export const PLAY_KEY = '__play__'
+
 export const PLAY_MODE_SEQUENCE = 0
 
 export const PLAY_MODE_LOOP = 1
