@@ -19,7 +19,7 @@
           <i class="icon-music"></i>
         </div>
         <div class="name">
-          <p class="text">{{ song.singer }}-{{ song.name }}</p>
+          <p class="text">{{ song.singer }} - {{ song.name }}</p>
         </div>
       </li>
       <div class="suggest-item" v-loading:[pullUpLoadingObject]="pullUpLoading"></div>
