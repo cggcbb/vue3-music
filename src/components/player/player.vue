@@ -128,6 +128,7 @@ import useCd from './use-cd'
 import useLyric from './use-lyric'
 import useMiddleInteractive from './use-middle-interactive'
 import useAnimation from './use-animation'
+import usePlayHistory from './use-play-history'
 
 export default {
   name: 'player',
@@ -147,6 +148,8 @@ export default {
     // & hooks
     const { playModeIcon, changePlayMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
+
+    const { savePlayHistory } = usePlayHistory()
 
     const {
       songReady,
@@ -233,6 +236,7 @@ export default {
       }
       songReady.value = true
       playLyric()
+      savePlayHistory(currentSong.value)
     }
 
     return {
