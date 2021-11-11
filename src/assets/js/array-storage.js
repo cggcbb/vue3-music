@@ -20,8 +20,14 @@ export const clear = key => {
 }
 
 export const insertArray = (arr, value, compareFn, maxLength) => {
-  if (~arr.findIndex(compareFn)) {
+  const index = arr.findIndex(compareFn)
+  // * 在队首
+  if (index === 0) {
     return
+  }
+  if (index > 0) {
+    // * 存在并且不在队首, 先删除
+    arr.splice(index, 1)
   }
   arr.unshift(value)
   if (maxLength && arr.length > maxLength) {
