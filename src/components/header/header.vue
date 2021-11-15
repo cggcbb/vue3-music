@@ -27,7 +27,7 @@ export default {
     width: 30px;
     height: 32px;
     margin-right: 9px;
-    background-image: url('../../assets/image/jay.png');
+    background-image: url('../../assets/image/jay.jpg');
     background-size: 30px 32px;
     border-radius: 50%;
   }

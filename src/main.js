@@ -13,7 +13,7 @@ createApp(App)
   .use(store)
   .use(router)
   .use(lazyPlugin, {
-    loading: require('@/assets/image/jay.png')
+    loading: require('@/assets/image/jay.jpg')
   })
   .directive('loading', loadingDirective)
   .directive('empty', emptyDirective)
