@@ -37,7 +37,7 @@ function registerRankDetail(app) {
     }).then(response => {
       const data = response.data
       if (data.code === CODE_OK) {
-        const list = data.detail.data.songInfoList
+        const list = data.detail.data?.songInfoList
         const songList = handleSongList(list)
 
         res.json({

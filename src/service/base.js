@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const CODE_OK = 0
-const baseURL = process.env.NODE_ENV === 'production' ? '/' : '/'
+const baseURL = process.env.NODE_ENV === 'production' ? 'https://music-next.cggcbb.com/' : '/'
 
 axios.defaults.baseURL = baseURL
 
@@ -17,7 +17,7 @@ export const get = (url, params) => {
       }
     })
     .catch(e => {
-      console.log(e)
+      throw new Error(e)
     })
 }
 
@@ -31,6 +31,6 @@ export const post = (url, data) => {
       }
     })
     .catch(e => {
-      console.log(e)
+      throw new Error(e)
     })
 }

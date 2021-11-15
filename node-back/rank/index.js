@@ -31,7 +31,7 @@ function registerRankList(app) {
           item.toplist.forEach(listItem => {
             rankList.push({
               id: listItem.topId,
-              pic: listItem.frontPicUrl,
+              pic: listItem.frontPicUrl?.replace('http', 'https'),
               name: listItem.title,
               period: listItem.period,
               songList: listItem.song.map(songItem => {

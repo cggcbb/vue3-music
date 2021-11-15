@@ -101,7 +101,7 @@ class Album {
     this.id = id
     this.username = username
     this.title = title
-    this.pic = pic
+    this.pic = pic?.replace('http', 'https')
   }
 }
 
