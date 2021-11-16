@@ -81,7 +81,7 @@ function process(mid, pureUrlMap) {
 
       midInfo.forEach(info => {
         //* 获取歌曲的真实播放 URL (域名 + purl 拼接)
-        pureUrlMap[info.songmid] = `${domain}${info.purl.replace('http', 'https')}`
+        pureUrlMap[info.songmid] = `${domain.replace('http', 'https')}${info.purl}`
       })
     }
   })
