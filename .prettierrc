@@ -1,4 +1,3 @@
-  
 {
   "singleQuote": true,
   "trailingComma": "none",
@@ -15,5 +14,6 @@
       }
     }
   ],
-  "bracketSpacing": true 
+  "bracketSpacing": true,
+  "htmlWhitespaceSensitivity": "ignore"
 }
