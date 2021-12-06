@@ -14,10 +14,12 @@
     </transition>
   </router-view>
   <player />
+  <m-footer></m-footer>
 </template>
 
 <script>
 import Header from '@/components/header/header'
+import Footer from '@/components/footer/footer'
 import Tab from '@/components/tab/tab'
 import Player from '@/components/player/player'
 import { useStore } from 'vuex'
@@ -28,14 +30,15 @@ export default {
   components: {
     'm-header': Header,
     Tab,
-    Player
+    Player,
+    'm-footer': Footer
   },
   setup() {
     const store = useStore()
     const playList = computed(() => store.getters.playList)
 
     const viewStyle = computed(() => {
-      const bottom = playList.value.length ? '60px' : '0'
+      const bottom = playList.value.length ? '60px' : '20px'
       return {
         bottom
       }
